@@ -48,20 +48,22 @@ func main() {
 	}
 
 	depsDir := "deps"
-	depFiles := []string{
-		"fastdeploy_ppocr_maa",
-		"MaaAdbControlUnit",
-		"MaaFramework",
-		"MaaToolkit",
-		"MaaUtils",
-		"onnxruntime_maa",
-		"opencv_world4_maa",
+	depsBinDir := filepath.Join(depsDir, "bin")
+	if err := copyDir(depsBinDir, installDir); err != nil {
+		fmt.Printf("Failed to copy deps binary directory: %v\n", err)
+		os.Exit(1)
 	}
 
+	excludeLibs := []string{
+		"MaaDbgControlUnit",
+		"MaaWin32ControlUnit",
+	}
 	var libPrefix, libSuffix string
+	piCli := "MaaPiCli"
 	switch runtime.GOOS {
 	case "windows":
 		libSuffix = ".dll"
+		piCli += ".exe"
 	case "darwin":
 		libPrefix = "lib"
 		libSuffix = ".dylib"
@@ -70,14 +72,17 @@ func main() {
 		libSuffix = ".so"
 	}
 
-	depsBinDir := filepath.Join(depsDir, "bin")
-	for _, file := range depFiles {
-		srcPath = filepath.Join(depsBinDir, libPrefix+file+libSuffix)
-		dstPath = filepath.Join(installDir, libPrefix+file+libSuffix)
-		if err := copyFile(srcPath, dstPath); err != nil {
-			fmt.Printf("Failed to copy dependency file %s: %v\n", file+libSuffix, err)
+	for _, lib := range excludeLibs {
+		libPath := filepath.Join(installDir, libPrefix+lib+libSuffix)
+		if err := os.Remove(libPath); err != nil {
+			fmt.Printf("Failed to remove %s: %v\n", libPath, err)
 			os.Exit(1)
 		}
+	}
+	piCliPath := filepath.Join(installDir, piCli)
+	if err := os.Remove(piCliPath); err != nil {
+		fmt.Printf("Failed to remove %s: %v\n", piCliPath, err)
+		os.Exit(1)
 	}
 
 	MaaAgentBinaryDir := filepath.Join(depsDir, "share", "MaaAgentBinary")
