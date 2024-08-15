@@ -1,0 +1,160 @@
+name: build
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/build.yml"
+      - "assets/**"
+      - "cmd/**"
+      - "internal/**"
+      - "scripts/build.go"
+      - "scripts/install.go"
+      - "main.go"
+
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - ".github/workflows/build.yml"
+      - "assets/**"
+      - "cmd/**"
+      - "internal/**"
+      - "scripts/build.go"
+      - "scripts/install.go"
+      - "main.go"
+
+  workflow_dispatch:
+
+jobs:
+  windows:
+    needs: meta
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [ x86_64 ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Download MaaFramework
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: MaaXYZ/MaaFramework
+          latest: true
+          fileName: "MAA-win-${{ matrix.arch }}*"
+          out-file-path: "${{ github.workspace }}/deps"
+          extract: true
+
+      - name: Build
+        run: |
+          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+
+      - name: Install
+        run: |
+          go run ./scripts/install.go
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-win-${{ matrix.arch }}
+          path: "install"
+
+  ubuntu:
+    needs: meta
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    strategy:
+      matrix:
+        arch: [ x86_64 ]
+      fail-fast: false
+
+    steps:
+      - name: Update system
+        run: |
+          pacman -Syu --noconfirm
+
+      - name: Install dep
+        run: |
+          pacman -Sy
+          pacman -S --noconfirm git
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Download MaaFramework
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: MaaXYZ/MaaFramework
+          latest: true
+          fileName: "MAA-linux-${{ matrix.arch }}*"
+          out-file-path: "deps"
+          extract: true
+
+      - name: Build
+        run: |
+          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+
+      - name: Install
+        run: |
+          go run ./scripts/install.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-linux-${{ matrix.arch }}
+          path: "install"
+
+  macos:
+    needs: meta
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            arch: x86_64
+          - os: macos-14
+            arch: aarch64
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Download MaaFramework
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: MaaXYZ/MaaFramework
+          latest: true
+          fileName: "MAA-macos-${{ matrix.arch }}*"
+          out-file-path: "deps"
+          extract: true
+
+      - name: Build
+        run: |
+          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+
+      - name: Install
+        run: |
+          go run ./scripts/install.go
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-linux-${{ matrix.arch }}
+          path: "install"

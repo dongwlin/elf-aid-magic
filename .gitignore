@@ -1,0 +1,8 @@
+/.idea
+
+# dependency dir
+/deps
+
+# build dir
+/bin
+/install
