@@ -159,5 +159,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: eam-linux-${{ matrix.arch }}
+          name: eam-macos-${{ matrix.arch }}
           path: "install"
