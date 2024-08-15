@@ -67,9 +67,11 @@ func main() {
 	case "darwin":
 		libPrefix = "lib"
 		libSuffix = ".dylib"
+		excludeLibs = []string{"MaaDbgControlUnit"}
 	default:
 		libPrefix = "lib"
 		libSuffix = ".so"
+		excludeLibs = []string{"MaaDbgControlUnit"}
 	}
 
 	for _, lib := range excludeLibs {
