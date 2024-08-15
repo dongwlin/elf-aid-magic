@@ -58,20 +58,22 @@ func main() {
 		"opencv_world4_maa",
 	}
 
-	var libSuffix string
+	var libPrefix, libSuffix string
 	switch runtime.GOOS {
 	case "windows":
 		libSuffix = ".dll"
 	case "darwin":
+		libPrefix = "lib"
 		libSuffix = ".dylib"
 	default:
+		libPrefix = "lib"
 		libSuffix = ".so"
 	}
 
 	depsBinDir := filepath.Join(depsDir, "bin")
 	for _, file := range depFiles {
-		srcPath = filepath.Join(depsBinDir, file+libSuffix)
-		dstPath = filepath.Join(installDir, file+libSuffix)
+		srcPath = filepath.Join(depsBinDir, libPrefix+file+libSuffix)
+		dstPath = filepath.Join(installDir, libPrefix+file+libSuffix)
 		if err := copyFile(srcPath, dstPath); err != nil {
 			fmt.Printf("Failed to copy dependency file %s: %v\n", file+libSuffix, err)
 			os.Exit(1)
