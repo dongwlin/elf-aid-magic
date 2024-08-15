@@ -28,6 +28,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  meta:
+    uses: ./.github/workflows/meta.yml
+
   windows:
     needs: meta
     runs-on: windows-latest
