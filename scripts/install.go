@@ -87,10 +87,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	MaaAgentBinaryDir := filepath.Join(depsDir, "share", "MaaAgentBinary")
+	maaAgentBinaryDir := filepath.Join(depsDir, "share", "MaaAgentBinary")
 	dstPath = filepath.Join(installDir, "MaaAgentBinary")
-	if err := copyDir(MaaAgentBinaryDir, dstPath); err != nil {
-		fmt.Printf("Failed to copy MaaAgentBinary directory %s: %v\n", MaaAgentBinaryDir, err)
+	if err := copyDir(maaAgentBinaryDir, dstPath); err != nil {
+		fmt.Printf("Failed to copy MaaAgentBinary directory %s: %v\n", maaAgentBinaryDir, err)
+		os.Exit(1)
+	}
+
+	assetsDir := "assets"
+	resDir := filepath.Join(assetsDir, "resource")
+	dtsPath := filepath.Join(installDir, "resource")
+	if err := copyDir(resDir, dtsPath); err != nil {
+		fmt.Printf("Failed to copy resource directory %s: %v\n", resDir, err)
 		os.Exit(1)
 	}
 
