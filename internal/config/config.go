@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -27,7 +29,17 @@ type Task struct {
 }
 
 func NewConfig() (*Config, error) {
-	data, err := load("./config/eam_config.json")
+	exePath, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+	exeDir := filepath.Dir(exePath)
+	exeAbsDir, err := filepath.Abs(exeDir)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := load(filepath.Join(exeAbsDir, "config", "eam_config.json"))
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +48,10 @@ func NewConfig() (*Config, error) {
 	err = json.Unmarshal(data, conf)
 	if err != nil {
 		return nil, err
+	}
+
+	for i, res := range conf.Resource {
+		conf.Resource[i] = strings.Replace(res, "{PROJECT_DIR}", exeDir, 1)
 	}
 
 	return conf, nil
