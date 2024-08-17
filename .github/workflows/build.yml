@@ -59,11 +59,11 @@ jobs:
 
       - name: Build
         run: |
-          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
 
       - name: Install
         run: |
-          go run ./scripts/install.go
+          go run ./scripts/install
           
       - uses: actions/upload-artifact@v4
         with:
@@ -108,11 +108,11 @@ jobs:
 
       - name: Build
         run: |
-          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
 
       - name: Install
         run: |
-          go run ./scripts/install.go
+          go run ./scripts/install
 
       - uses: actions/upload-artifact@v4
         with:
@@ -151,11 +151,11 @@ jobs:
 
       - name: Build
         run: |
-          go run ./scripts/build.go -version=${{ needs.meta.outputs.tag }}
+          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
 
       - name: Install
         run: |
-          go run ./scripts/install.go
+          go run ./scripts/install
 
       - uses: actions/upload-artifact@v4
         with:
