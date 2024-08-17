@@ -22,8 +22,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Current directory: %s\n", curDir)
-
 	var buildAt, goVersion, version string
 	flag.StringVar(&buildAt, "buildAt", time.Now().Format(time.RFC3339), "Build time")
 	flag.StringVar(&goVersion, "goVersion", runtime.Version(), "Go version used for build")
