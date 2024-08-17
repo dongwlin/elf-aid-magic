@@ -1,0 +1,6 @@
+{
+    "Startup": {
+        "action": "StartApp",
+        "package": "com.bilibili.qnzl.bili/com.yc.YCActivity"
+    }
+}

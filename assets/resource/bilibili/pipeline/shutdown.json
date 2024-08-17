@@ -1,0 +1,6 @@
+{
+    "Shutdown": {
+        "action": "StopApp",
+        "package": "com.bilibili.qnzl.bili"
+    }
+}
