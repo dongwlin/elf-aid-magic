@@ -89,6 +89,7 @@ func check(conf *Config) Config {
 		checked.MaxAge = conf.MaxAge
 	}
 	checked.Compress = conf.Compress
+	checked.Dev = conf.Dev
 
 	return checked
 }
