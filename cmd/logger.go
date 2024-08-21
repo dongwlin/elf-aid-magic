@@ -17,5 +17,6 @@ func NewLogger() *logger.Logger {
 
 	return logger.New(&logger.Config{
 		Filename: filepath.Join(exeDir, "log", "log.json"),
+		Dev:      dev,
 	})
 }

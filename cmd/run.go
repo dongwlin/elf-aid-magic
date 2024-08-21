@@ -7,6 +7,7 @@ import (
 	"github.com/MaaXYZ/maa-framework-go/toolkit"
 	"github.com/dongwlin/elf-aid-magic/internal/config"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 	"os"
 )
 
@@ -17,26 +18,41 @@ var runCmd = &cobra.Command{
 }
 
 func runRun(cmd *cobra.Command, args []string) {
+	l := NewLogger()
+	defer l.Sync()
+
 	toolkit.InitOption("./", "{}")
 
 	conf, err := config.NewConfig()
 	if err != nil {
-		fmt.Println(err)
+		l.Error("fail to init config", zap.Error(err))
+		fmt.Println("Fail to init config. See log.json for details.")
 		os.Exit(1)
 	}
+
+	inst := maa.New(nil)
+	defer inst.Destroy()
 
 	res := maa.NewResource(nil)
 	defer res.Destroy()
 
-	var resJob maa.Job
 	for _, resPath := range conf.Resource {
-		resJob = res.PostPath(resPath)
+		resJob := res.PostPath(resPath)
+		l.Info("load resource", zap.String("resource", resPath))
+		if ok := resJob.Wait(); !ok {
+			l.Error("fail to load resource", zap.String("resource", resPath))
+		}
 	}
-	resJob.Wait()
+	if ok := inst.BindResource(res); !ok {
+		l.Error("failed to bind resource")
+		fmt.Println("Fail to bind resource.")
+		os.Exit(1)
+	}
 
 	adbConfigData, err := json.Marshal(conf.Adb.Config)
 	if err != nil {
-		fmt.Println(err)
+		l.Error("failed to serialize adb config", zap.Error(err))
+		fmt.Println("Failed to serialize adb config. See log.json for details.")
 		os.Exit(1)
 	}
 
@@ -49,30 +65,38 @@ func runRun(cmd *cobra.Command, args []string) {
 		nil,
 	)
 	defer ctrl.Destroy()
+	l.Info("new adb controller", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
 	ctrlJob := ctrl.PostConnect()
-	ctrlJob.Wait()
-
-	inst := maa.New(nil)
-	defer inst.Destroy()
-
-	inst.BindResource(res)
-	inst.BindController(ctrl)
-
-	if !inst.Inited() {
-		fmt.Println("Failed to initialize instance.")
+	if ok := ctrlJob.Wait(); !ok {
+		l.Error("fail to connect device", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
+	}
+	if ok := inst.BindController(ctrl); !ok {
+		l.Error("failed to bind controller")
+		fmt.Println("Fail to bind controller.")
 		os.Exit(1)
 	}
 
-	var taskJob maa.TaskJob
+	if !inst.Inited() {
+		l.Error("failed to initialize instance")
+		fmt.Println("Failed to initialize instance. See log.json for details.")
+		os.Exit(1)
+	}
+
 	for _, task := range conf.Tasks {
 		param, err := json.Marshal(task.Param)
 		if err != nil {
-			fmt.Println(err)
+			l.Error("failed to serialize task param", zap.Error(err))
+			fmt.Println("Failed to serialize task param. See log.json for details.")
 			os.Exit(1)
 		}
-		taskJob = inst.PostTask(task.Entry, string(param))
+		l.Info("run task", zap.String("entry", task.Entry), zap.String("param", string(param)))
+		taskJob := inst.PostTask(task.Entry, string(param))
+		if ok := taskJob.Wait(); !ok {
+			l.Error("failed to complete task", zap.String("entry", task.Entry))
+		}
+		l.Info("success to complete task", zap.String("entry", task.Entry))
 	}
-	taskJob.Wait()
+	l.Info("complete all tasks")
 }
 
 func init() {
