@@ -17,3 +17,7 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
+func init() {
+	rootCmd.PersistentFlags().BoolVar(&dev, "dev", false, "dev mode")
+}
