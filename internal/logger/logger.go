@@ -74,7 +74,7 @@ func check(conf *Config) Config {
 	}
 	checked.Level = conf.Level
 	if conf.MaxSize == 0 {
-		checked.MaxSize = 100
+		checked.MaxSize = 5
 	} else {
 		checked.MaxSize = conf.MaxSize
 	}
