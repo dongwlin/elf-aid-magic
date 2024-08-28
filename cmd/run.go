@@ -17,7 +17,7 @@ var runCmd = &cobra.Command{
 	Run:   runRun,
 }
 
-func runRun(cmd *cobra.Command, args []string) {
+func runRun(_ *cobra.Command, _ []string) {
 	l := NewLogger()
 	defer l.Sync()
 
@@ -41,11 +41,13 @@ func runRun(cmd *cobra.Command, args []string) {
 		l.Info("load resource", zap.String("resource", resPath))
 		if ok := resJob.Wait(); !ok {
 			l.Error("fail to load resource", zap.String("resource", resPath))
+			fmt.Println("Fail to load resource. See log.json for details.")
+			os.Exit(1)
 		}
 	}
 	if ok := inst.BindResource(res); !ok {
 		l.Error("failed to bind resource")
-		fmt.Println("Fail to bind resource.")
+		fmt.Println("Fail to bind resource. See log.json for details.")
 		os.Exit(1)
 	}
 
@@ -64,15 +66,21 @@ func runRun(cmd *cobra.Command, args []string) {
 		"./MaaAgentBinary",
 		nil,
 	)
+	if ctrl == nil {
+		l.Error("failed to init adb controller")
+		fmt.Println("Failed to init adb controller. See log.json for details.")
+		os.Exit(1)
+	}
 	defer ctrl.Destroy()
 	l.Info("new adb controller", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
-	ctrlJob := ctrl.PostConnect()
-	if ok := ctrlJob.Wait(); !ok {
-		l.Error("fail to connect device", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
+	if ok := ctrl.PostConnect().Wait(); !ok {
+		l.Error("failed to connect device", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
+		fmt.Println("Failed to connect device. See log.json for details.")
+		os.Exit(1)
 	}
 	if ok := inst.BindController(ctrl); !ok {
 		l.Error("failed to bind controller")
-		fmt.Println("Fail to bind controller.")
+		fmt.Println("Fail to bind controller. See log.json for details.")
 		os.Exit(1)
 	}
 
@@ -90,8 +98,7 @@ func runRun(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 		l.Info("run task", zap.String("entry", task.Entry), zap.String("param", string(param)))
-		taskJob := inst.PostTask(task.Entry, string(param))
-		if ok := taskJob.Wait(); !ok {
+		if ok := inst.PostTask(task.Entry, string(param)).Wait(); !ok {
 			l.Error("failed to complete task", zap.String("entry", task.Entry))
 		}
 		l.Info("success to complete task", zap.String("entry", task.Entry))
