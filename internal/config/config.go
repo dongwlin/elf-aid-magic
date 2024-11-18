@@ -17,8 +17,7 @@ type Config struct {
 type AdbController struct {
 	Path      string                 `json:"path"`
 	Address   string                 `json:"address"`
-	Key       int32                  `json:"key"`
-	Touch     int32                  `json:"touch"`
+	Input     int32                  `json:"input"`
 	Screencap int32                  `json:"screencap"`
 	Config    map[string]interface{} `json:"config"`
 }

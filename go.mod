@@ -3,7 +3,7 @@ module github.com/dongwlin/elf-aid-magic
 go 1.22.4
 
 require (
-	github.com/MaaXYZ/maa-framework-go v0.6.0
+	github.com/MaaXYZ/maa-framework-go v1.5.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/spf13/cobra v1.8.1
 	go.uber.org/zap v1.27.0
@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/ebitengine/purego v0.8.1 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
