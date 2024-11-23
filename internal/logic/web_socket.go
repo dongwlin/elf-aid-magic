@@ -80,8 +80,8 @@ func (l *WebsocketLogic) run(msg *Message) Message {
 }
 
 func (l *WebsocketLogic) stop(msg *Message) Message {
-	l.operator.Stop()
 	l.cancel()
+	l.operator.Stop()
 	return createSuccessResponse(msg.Type, nil, nil)
 }
 
