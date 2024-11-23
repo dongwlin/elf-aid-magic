@@ -1,12 +1,16 @@
 package cmd
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
-	"github.com/MaaXYZ/maa-framework-go"
 	"github.com/dongwlin/elf-aid-magic/internal/config"
+	"github.com/dongwlin/elf-aid-magic/internal/logger"
+	"github.com/dongwlin/elf-aid-magic/internal/operator"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -18,94 +22,60 @@ var runCmd = &cobra.Command{
 }
 
 func runRun(_ *cobra.Command, _ []string) {
-	l := NewLogger()
+	stopped := false
+	conf := config.New()
+
+	l := logger.New(conf)
 	defer l.Sync()
 
-	toolkit := maa.NewToolkit()
-	toolkit.ConfigInitOption("./", "{}")
+	l.Info("START")
 
-	conf, err := config.NewConfig()
-	if err != nil {
-		l.Error("fail to init config", zap.Error(err))
-		fmt.Println("Fail to init config. See log.json for details.")
+	o := operator.New(conf, l)
+	defer o.Destroy()
+
+	fmt.Println("Link Start!")
+
+	if !o.Connect() {
+		fmt.Println("Failed to connect device.")
+		o.Destroy()
 		os.Exit(1)
 	}
 
-	inst := maa.NewTasker(nil)
-	defer inst.Destroy()
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := context.WithCancel(context.Background())
 
-	res := maa.NewResource(nil)
-	defer res.Destroy()
+	var wg sync.WaitGroup
+	wg.Add(1)
 
-	for _, resPath := range conf.Resource {
-		resJob := res.PostPath(resPath)
-		l.Info("load resource", zap.String("resource", resPath))
-		if ok := resJob.Wait().Success(); !ok {
-			l.Error("fail to load resource", zap.String("resource", resPath))
-			fmt.Println("Fail to load resource. See log.json for details.")
-			os.Exit(1)
+	go func() {
+		sig := <-sigs
+		l.Info(
+			"received interrupt signal to stop",
+			zap.String("signal", sig.String()),
+		)
+		stopped = true
+		o.Stop()
+		cancel()
+	}()
+
+	go func() {
+		defer wg.Done()
+		if !o.Run(ctx) && !stopped {
+			fmt.Println("Failed to run tasks.")
 		}
-	}
-	if ok := inst.BindResource(res); !ok {
-		l.Error("failed to bind resource")
-		fmt.Println("Fail to bind resource. See log.json for details.")
-		os.Exit(1)
-	}
+	}()
 
-	adbConfigData, err := json.Marshal(conf.Adb.Config)
-	if err != nil {
-		l.Error("failed to serialize adb config", zap.Error(err))
-		fmt.Println("Failed to serialize adb config. See log.json for details.")
-		os.Exit(1)
-	}
+	fmt.Println("Running...")
 
-	ctrl := maa.NewAdbController(
-		conf.Adb.Path,
-		conf.Adb.Address,
-		maa.AdbScreencapMethod(conf.Adb.Screencap),
-		maa.AdbInputMethod(conf.Adb.Input),
-		string(adbConfigData),
-		"./MaaAgentBinary",
-		nil,
-	)
-	if ctrl == nil {
-		l.Error("failed to init adb controller")
-		fmt.Println("Failed to init adb controller. See log.json for details.")
-		os.Exit(1)
-	}
-	defer ctrl.Destroy()
-	l.Info("new adb controller", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
-	if ok := ctrl.PostConnect().Wait().Success(); !ok {
-		l.Error("failed to connect device", zap.String("path", conf.Adb.Path), zap.String("address", conf.Adb.Address))
-		fmt.Println("Failed to connect device. See log.json for details.")
-		os.Exit(1)
-	}
-	if ok := inst.BindController(ctrl); !ok {
-		l.Error("failed to bind controller")
-		fmt.Println("Fail to bind controller. See log.json for details.")
-		os.Exit(1)
-	}
+	wg.Wait()
 
-	if !inst.Initialized() {
-		l.Error("failed to initialize instance")
-		fmt.Println("Failed to initialize instance. See log.json for details.")
-		os.Exit(1)
+	if stopped {
+		fmt.Println("Interrupt")
+	} else {
+		fmt.Println("Completed")
 	}
-
-	for _, task := range conf.Tasks {
-		param, err := json.Marshal(task.Param)
-		if err != nil {
-			l.Error("failed to serialize task param", zap.Error(err))
-			fmt.Println("Failed to serialize task param. See log.json for details.")
-			os.Exit(1)
-		}
-		l.Info("run task", zap.String("entry", task.Entry), zap.String("param", string(param)))
-		if ok := inst.PostPipeline(task.Entry, string(param)).Wait().Success(); !ok {
-			l.Error("failed to complete task", zap.String("entry", task.Entry))
-		}
-		l.Info("success to complete task", zap.String("entry", task.Entry))
-	}
-	l.Info("complete all tasks")
+	l.Info("END")
 }
 
 func init() {

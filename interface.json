@@ -1,0 +1,20 @@
+{
+    "version": "1.0",
+    "message": "Welecome to MaaFramework!",
+    "controller": [
+        {
+            "name": "安卓端",
+            "type": "Adb"
+        }
+    ],
+    "resource": [
+        {
+            "name": "Offical",
+            "path": [
+                "{PROJECT_DIR}/assets/resource/base"
+            ]
+        }
+    ],
+    "task": [],
+    "option": {}
+}

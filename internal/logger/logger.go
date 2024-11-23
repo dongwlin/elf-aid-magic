@@ -1,101 +1,70 @@
 package logger
 
 import (
+	"os"
+	"path/filepath"
+
+	"github.com/dongwlin/elf-aid-magic/internal/config"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
-type Level zapcore.Level
-
-const (
-	DebugLevel = zapcore.DebugLevel
-	InfoLevel  = zapcore.InfoLevel
-	WarnLevel  = zapcore.WarnLevel
-	ErrorLevel = zapcore.ErrorLevel
-	PanicLevel = zapcore.PanicLevel
-	FatalLevel = zapcore.FatalLevel
-)
-
-type Logger struct {
-	*zap.Logger
-}
-
-type Config struct {
-	Filename   string
-	Level      Level
-	MaxSize    int
-	MaxBackups int
-	MaxAge     int
-	Compress   bool
-	Dev        bool
-}
-
-func New(conf *Config) *Logger {
-	checkedConf := check(conf)
-
+func New(conf *config.Config) *zap.Logger {
+	exePath, err := os.Executable()
+	if err != nil {
+		return nil
+	}
+	exeDir := filepath.Dir(exePath)
+	logPath := filepath.Join(exeDir, "debug", "log.jsonl")
 	hook := lumberjack.Logger{
-		Filename:   checkedConf.Filename,
-		MaxSize:    checkedConf.MaxSize,
-		MaxBackups: checkedConf.MaxBackups,
-		MaxAge:     checkedConf.MaxAge,
-		Compress:   checkedConf.Compress,
+		Filename:   logPath,
+		MaxSize:    conf.Log.MaxSize,
+		MaxBackups: conf.Log.MaxBackups,
+		MaxAge:     conf.Log.MaxAge,
+		Compress:   conf.Log.Compress,
 	}
 
-	if checkedConf.Dev {
-		encoder := getConsoleEncoder()
-		core := zapcore.NewCore(
-			encoder,
-			zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(&hook)),
-			zapcore.Level(conf.Level),
-		)
-		return &Logger{
-			Logger: zap.New(core, zap.Development(), zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel)),
-		}
-	}
 	encoder := getJsonEncoder()
 	core := zapcore.NewCore(
 		encoder,
 		zapcore.AddSync(&hook),
-		zapcore.Level(conf.Level),
+		getLevel(conf.Log.Level),
 	)
-	return &Logger{
-		Logger: zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel)),
+	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
+}
+
+func getLevel(level string) zapcore.Level {
+	switch level {
+	case "debug":
+		return zap.DebugLevel
+	case "info":
+		return zap.InfoLevel
+	case "warn":
+		return zap.WarnLevel
+	case "error":
+		return zap.ErrorLevel
+	case "fatal":
+		return zap.FatalLevel
+	default:
+		return zap.InfoLevel
 	}
 }
 
-func check(conf *Config) Config {
-	var checked Config
-	if conf.Filename == "" {
-		checked.Filename = "./eam.log"
-	} else {
-		checked.Filename = conf.Filename
+func getLumberjackLogger(conf *config.Config) (lumberjack.Logger, error) {
+	exePath, err := os.Executable()
+	if err != nil {
+		return lumberjack.Logger{}, err
 	}
-	checked.Level = conf.Level
-	if conf.MaxSize == 0 {
-		checked.MaxSize = 5
-	} else {
-		checked.MaxSize = conf.MaxSize
-	}
-	if conf.MaxBackups == 0 {
-		checked.MaxBackups = 10
-	} else {
-		checked.MaxBackups = conf.MaxBackups
-	}
-	if conf.MaxAge == 0 {
-		checked.MaxAge = 30
-	} else {
-		checked.MaxAge = conf.MaxAge
-	}
-	checked.Compress = conf.Compress
-	checked.Dev = conf.Dev
-
-	return checked
-}
-
-func getConsoleEncoder() zapcore.Encoder {
-	return zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+	exeDir := filepath.Dir(exePath)
+	logPath := filepath.Join(exeDir, "debug", "log.jsonl")
+	return lumberjack.Logger{
+		Filename:   logPath,
+		MaxSize:    conf.Log.MaxSize,
+		MaxBackups: conf.Log.MaxBackups,
+		MaxAge:     conf.Log.MaxAge,
+		Compress:   conf.Log.Compress,
+	}, nil
 }
 
 func getJsonEncoder() zapcore.Encoder {

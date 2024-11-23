@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/dongwlin/elf-aid-magic/internal/config"
+	"github.com/dongwlin/elf-aid-magic/internal/logger"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	"os"
 )
 
 var stopCmd = &cobra.Command{
@@ -14,7 +17,9 @@ var stopCmd = &cobra.Command{
 }
 
 func stopRun(cmd *cobra.Command, args []string) {
-	l := NewLogger()
+	conf := config.New()
+
+	l := logger.New(conf)
 	defer l.Sync()
 
 	initDaemon(l)

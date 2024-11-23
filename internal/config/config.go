@@ -1,25 +1,39 @@
 package config
 
 import (
-	"encoding/json"
-	"io"
+	"log"
 	"os"
 	"path/filepath"
-	"strings"
+
+	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Adb      AdbController `json:"adb"`
-	Resource []string      `json:"resource"`
-	Tasks    []Task        `json:"tasks"`
+	Server ServerConfig `mapstructure:"server"`
+	Device DeviceConfig `mapstructure:"device"`
+	Tasks  []Task       `mapstructure:"tasks"`
+	Log    LogConfig    `mapstructure:"log"`
 }
 
-type AdbController struct {
-	Path      string                 `json:"path"`
-	Address   string                 `json:"address"`
-	Input     int32                  `json:"input"`
-	Screencap int32                  `json:"screencap"`
-	Config    map[string]interface{} `json:"config"`
+type ServerConfig struct {
+	Port int `mapstructure:"port"`
+}
+
+type LogConfig struct {
+	Level      string `mapstructure:"level"`
+	MaxSize    int    `mapstructure:"max_size"`
+	MaxBackups int    `mapstructure:"max_backups"`
+	MaxAge     int    `mapstructure:"max_age"`
+	Compress   bool   `mapstructure:"compress"`
+}
+
+type DeviceConfig struct {
+	Name         string                 `mapstructure:"name"`
+	SerialNumber string                 `mapstructure:"serial_number"`
+	AdbPath      string                 `mapstructure:"adb_path"`
+	Input        uint64                 `mapstructure:"input"`
+	Screencap    uint64                 `mapstructure:"screencap"`
+	AdbConfig    map[string]interface{} `mapstructure:"adb_config"`
 }
 
 type Task struct {
@@ -27,46 +41,30 @@ type Task struct {
 	Param map[string]interface{} `json:"param"`
 }
 
-func NewConfig() (*Config, error) {
+func New() *Config {
+	v := viper.New()
+
+	v.SetDefault("server.port", 8000)
+	v.SetDefault("device.adb_config", map[string]interface{}{})
+
+	v.SetConfigName("config")
+	v.SetConfigType("toml")
+
 	exePath, err := os.Executable()
 	if err != nil {
-		return nil, err
+		log.Fatalf("Failed to get executable path, %v", err)
 	}
 	exeDir := filepath.Dir(exePath)
-	exeAbsDir, err := filepath.Abs(exeDir)
-	if err != nil {
-		return nil, err
+	configDir := filepath.Join(exeDir, "config")
+	v.AddConfigPath(configDir)
+
+	if err := v.ReadInConfig(); err != nil {
+		log.Fatalf("Failed to read config file, %v", err)
 	}
 
-	data, err := load(filepath.Join(exeAbsDir, "config", "eam_config.json"))
-	if err != nil {
-		return nil, err
+	var config Config
+	if err := v.Unmarshal(&config); err != nil {
+		log.Fatalf("Failed to unmarshal config file, %v", err)
 	}
-
-	conf := &Config{}
-	err = json.Unmarshal(data, conf)
-	if err != nil {
-		return nil, err
-	}
-
-	for i, res := range conf.Resource {
-		conf.Resource[i] = strings.Replace(res, "{PROJECT_DIR}", exeDir, 1)
-	}
-
-	return conf, nil
-}
-
-func load(path string) ([]byte, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
+	return &config
 }

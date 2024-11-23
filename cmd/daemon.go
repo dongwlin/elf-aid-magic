@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dongwlin/elf-aid-magic/internal/logger"
-	"go.uber.org/zap"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 	pidFile string
 )
 
-func initDaemon(logger *logger.Logger) {
+func initDaemon(logger *zap.Logger) {
 	exe, err := os.Executable()
 	if err != nil {
 		logger.Error("failed to get the path name for the executable", zap.Error(err))

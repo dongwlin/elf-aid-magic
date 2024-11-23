@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"runtime"
 	"time"
@@ -15,12 +14,6 @@ func main() {
 	appName := "eam"
 	moduleName := "github.com/dongwlin/elf-aid-magic"
 	binDir := "bin"
-
-	curDir, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("Failed to get current directory: %v\n", err)
-		os.Exit(1)
-	}
 
 	var buildAt, goVersion, version string
 	flag.StringVar(&buildAt, "buildAt", time.Now().Format(time.RFC3339), "Build time")
@@ -55,16 +48,13 @@ func main() {
 		"build",
 		"-o", outputPath,
 		"-ldflags", ldflags,
-		"-tags", " customenv",
 		"main.go",
 	}
 
 	cmd := exec.Command("go", buildCommand...)
 
-	cgoEnabled := "CGO_ENABLED=1"
-	cgoCFlags := fmt.Sprintf("CGO_CFLAGS=-I%s", path.Join(curDir, "deps", "include"))
-	cgoLDFlags := fmt.Sprintf("CGO_LDFLAGS=-L%s -lMaaFramework -lMaaToolkit", path.Join(curDir, "deps", "bin"))
-	cmd.Env = append(os.Environ(), cgoEnabled, cgoCFlags, cgoLDFlags)
+	cgoDisabled := "CGO_ENABLED=0"
+	cmd.Env = append(os.Environ(), cgoDisabled)
 
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout

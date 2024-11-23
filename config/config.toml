@@ -1,0 +1,26 @@
+[server]
+port = 8000
+
+[log]
+level = "info"
+max_size = 5
+max_backups = 10
+max_age = 30
+compress = true
+
+[device]
+name = "Device0"
+serial_number = "127.0.0.1:16384"
+adb_path = "/path/to/adb"
+input = ""
+screencap = ""
+
+[device.adb_config.extras.mumu]
+enable = true
+index = 0
+path = "/path/to/MuMuPlayer-12.0"
+
+
+[[tasks]]
+entry = ""
+param = {}

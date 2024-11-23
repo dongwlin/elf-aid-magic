@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "eam",
-	Short: "A one-click tool for the daily tasks of Millennium Tour.",
+	Short: "A one-click tool for the daily tasks of {?}.",
 }
 
 func Execute() {

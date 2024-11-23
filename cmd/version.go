@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/MaaXYZ/maa-framework-go"
-	"github.com/dongwlin/elf-aid-magic/internal/config"
+
+	"github.com/dongwlin/elf-aid-magic/internal/logic"
 	"github.com/spf13/cobra"
 )
 
@@ -14,11 +14,11 @@ var versionCmd = &cobra.Command{
 }
 
 func versionRun(cmd *cobra.Command, args []string) {
-	maaVersion := maa.Version()
-	fmt.Println("Build At:", config.BuildAt)
-	fmt.Println("Go Version:", config.GoVersion)
-	fmt.Println("Version:", config.Version)
-	fmt.Println("Maa Framework Version:", maaVersion)
+	versionLogic := logic.NewVersionLogic()
+	fmt.Println("Build At:", versionLogic.GetBuildAt())
+	fmt.Println("Go Version:", versionLogic.GetGoVersion())
+	fmt.Println("Version:", versionLogic.GetElfAidMagicVersion())
+	fmt.Println("Maa Framework Version:", versionLogic.GetMaaFrameworkVersion())
 }
 
 func init() {
