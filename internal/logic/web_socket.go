@@ -19,11 +19,8 @@ type WebsocketLogic struct {
 }
 
 func NewWebSocketLogic(o *operator.Operator) *WebsocketLogic {
-	ctx, cancel := context.WithCancel(context.Background())
 	return &WebsocketLogic{
 		operator: o,
-		ctx:      ctx,
-		cancel:   cancel,
 	}
 }
 
@@ -73,6 +70,9 @@ func (l *WebsocketLogic) run(msg *Message) Message {
 	if !l.operator.Connect() {
 		return createErrorResponse(msg.Type, "Failed to connect device.", nil)
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	l.ctx = ctx
+	l.cancel = cancel
 	go func() {
 		if l.operator.Run(l.ctx) {
 			l.completed()
