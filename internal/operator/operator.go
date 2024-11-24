@@ -155,7 +155,7 @@ func (o *Operator) initAdbController() bool {
 		zap.String("path", o.conf.Device.AdbPath),
 		zap.String("address", o.conf.Device.SerialNumber),
 	)
-	if ok := o.tasker.BindController(ctrl); !ok {
+	if ok := o.tasker.BindController(o.ctrl); !ok {
 		o.logger.Error("failed to bind controller")
 		return false
 	}
@@ -188,7 +188,7 @@ func (o *Operator) initWin32Controller() bool {
 	o.ctrl = ctrl
 	o.logger.Info("create win32 controller")
 	o.ctrl.SetScreenshotUseRawSize(true)
-	if ok := o.tasker.BindController(ctrl); !ok {
+	if ok := o.tasker.BindController(o.ctrl); !ok {
 		o.logger.Error("failed to bind controller")
 		return false
 	}
@@ -196,16 +196,16 @@ func (o *Operator) initWin32Controller() bool {
 }
 
 func (o *Operator) Connect() bool {
-	if !o.tasker.Initialized() {
-		o.logger.Error("failed to initialize tasker instance")
-		return false
-	}
 	if !o.ctrl.PostConnect().Wait().Success() {
 		o.logger.Error(
 			"failed to connect device",
 			zap.String("path", o.conf.Device.AdbPath),
 			zap.String("address", o.conf.Device.SerialNumber),
 		)
+		return false
+	}
+	if !o.tasker.Initialized() {
+		o.logger.Error("failed to initialize tasker instance")
 		return false
 	}
 	return true
