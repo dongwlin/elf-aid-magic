@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"time"
@@ -11,8 +12,10 @@ import (
 	"github.com/dongwlin/elf-aid-magic/internal/logger"
 	"github.com/dongwlin/elf-aid-magic/internal/operator"
 	"github.com/dongwlin/elf-aid-magic/internal/wire"
+	"github.com/dongwlin/elf-aid-magic/public"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -66,6 +69,11 @@ func serveRun(cmd *cobra.Command, args []string) {
 }
 
 func initRouter(r fiber.Router, h *wire.Handler) {
+	r.Use(filesystem.New(filesystem.Config{
+		Root:       http.FS(public.Public),
+		PathPrefix: "dist",
+	}))
+
 	h.Ping.Register(r)
 
 	ws := r.Group("/ws")

@@ -3,6 +3,10 @@
 # dependency dir
 /deps
 
+# frontend dir
+/public/dist/*
+!/public/dist/.gitkeep
+
 # build dir
 /bin
 /install
