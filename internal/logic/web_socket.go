@@ -67,13 +67,17 @@ func (l *WebsocketLogic) ProcessMessage(msg *Message) []byte {
 }
 
 func (l *WebsocketLogic) run(msg *Message) Message {
+	if !l.operator.InitController("adb") {
+		return createErrorResponse(msg.Type, "Failed to init controller.", nil)
+	}
 	if !l.operator.Connect() {
-		return createErrorResponse(msg.Type, "Failed to connect device", nil)
+		return createErrorResponse(msg.Type, "Failed to connect device.", nil)
 	}
 	go func() {
 		if l.operator.Run(l.ctx) {
 			l.completed()
 		}
+		l.operator.DestroyController()
 	}()
 	return createSuccessResponse(msg.Type, nil, nil)
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"unsafe"
 
 	"github.com/MaaXYZ/maa-framework-go"
 	"github.com/dongwlin/elf-aid-magic/internal/config"
@@ -39,6 +40,12 @@ func (o *Operator) Destroy() {
 	}
 	if o.tasker != nil {
 		o.tasker.Destroy()
+	}
+}
+
+func (o *Operator) DestroyController() {
+	if o.ctrl != nil {
+		o.ctrl.Destroy()
 	}
 }
 
@@ -93,7 +100,22 @@ func (o *Operator) initResource() {
 	}
 }
 
-func (o *Operator) initController() bool {
+func (o *Operator) InitController(ctrlType string) bool {
+	switch ctrlType {
+	case "adb":
+		return o.initAdbController()
+	case "win32":
+		return o.initWin32Controller()
+	default:
+		o.logger.Error(
+			"unknown ctrl type",
+			zap.String("ctrl type", ctrlType),
+		)
+		return false
+	}
+}
+
+func (o *Operator) initAdbController() bool {
 	var adbConfigStr string
 	adbConfigData, err := json.Marshal(o.conf.Device.AdbConfig)
 	if err != nil {
@@ -133,14 +155,39 @@ func (o *Operator) initController() bool {
 		zap.String("path", o.conf.Device.AdbPath),
 		zap.String("address", o.conf.Device.SerialNumber),
 	)
-	if ok := ctrl.PostConnect().Wait().Success(); !ok {
-		o.logger.Error(
-			"failed to connect device",
-			zap.String("path", o.conf.Device.AdbPath),
-			zap.String("address", o.conf.Device.SerialNumber),
-		)
+	if ok := o.tasker.BindController(ctrl); !ok {
+		o.logger.Error("failed to bind controller")
 		return false
 	}
+	return true
+}
+
+func (o *Operator) initWin32Controller() bool {
+	windows := o.toolkit.FindDesktopWindows()
+	var handle unsafe.Pointer
+	for _, window := range windows {
+		if window.WindowName == "雷索纳斯" && window.ClassName == "UnityWndClass" {
+			handle = window.Handle
+			break
+		}
+	}
+	if handle == nil {
+		o.logger.Error("not found target window")
+		return false
+	}
+	ctrl := maa.NewWin32Controller(
+		handle,
+		maa.Win32ScreencapMethodGDI,
+		maa.Win32InputMethodSeize,
+		nil,
+	)
+	if ctrl == nil {
+		o.logger.Error("failed to init win32 controller")
+		return false
+	}
+	o.ctrl = ctrl
+	o.logger.Info("create win32 controller")
+	o.ctrl.SetScreenshotUseRawSize(true)
 	if ok := o.tasker.BindController(ctrl); !ok {
 		o.logger.Error("failed to bind controller")
 		return false
@@ -149,11 +196,16 @@ func (o *Operator) initController() bool {
 }
 
 func (o *Operator) Connect() bool {
-	if !o.initController() {
-		return false
-	}
 	if !o.tasker.Initialized() {
 		o.logger.Error("failed to initialize tasker instance")
+		return false
+	}
+	if !o.ctrl.PostConnect().Wait().Success() {
+		o.logger.Error(
+			"failed to connect device",
+			zap.String("path", o.conf.Device.AdbPath),
+			zap.String("address", o.conf.Device.SerialNumber),
+		)
 		return false
 	}
 	return true

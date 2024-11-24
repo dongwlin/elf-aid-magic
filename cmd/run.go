@@ -35,6 +35,12 @@ func runRun(_ *cobra.Command, _ []string) {
 
 	fmt.Println("Link Start!")
 
+	if !o.InitController("adb") {
+		fmt.Println("Failed to init controller.")
+		o.Destroy()
+		os.Exit(1)
+	}
+
 	if !o.Connect() {
 		fmt.Println("Failed to connect device.")
 		o.Destroy()

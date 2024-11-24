@@ -54,33 +54,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	excludeLibs := []string{
-		"MaaDbgControlUnit",
-		"MaaWin32ControlUnit",
-	}
-	var libPrefix, libSuffix string
 	piCli := "MaaPiCli"
-	switch runtime.GOOS {
-	case "windows":
-		libSuffix = ".dll"
+	if runtime.GOOS == "windows" {
 		piCli += ".exe"
-	case "darwin":
-		libPrefix = "lib"
-		libSuffix = ".dylib"
-		excludeLibs = []string{"MaaDbgControlUnit"}
-	default:
-		libPrefix = "lib"
-		libSuffix = ".so"
-		excludeLibs = []string{"MaaDbgControlUnit"}
+
 	}
 
-	for _, lib := range excludeLibs {
-		libPath := filepath.Join(installDir, libPrefix+lib+libSuffix)
-		if err := os.Remove(libPath); err != nil {
-			fmt.Printf("Failed to remove %s: %v\n", libPath, err)
-			os.Exit(1)
-		}
-	}
 	piCliPath := filepath.Join(installDir, piCli)
 	if err := os.Remove(piCliPath); err != nil {
 		fmt.Printf("Failed to remove %s: %v\n", piCliPath, err)
