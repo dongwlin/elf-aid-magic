@@ -46,6 +46,7 @@ func (o *Operator) Destroy() {
 func (o *Operator) DestroyController() {
 	if o.ctrl != nil {
 		o.ctrl.Destroy()
+		o.ctrl = nil
 	}
 }
 
