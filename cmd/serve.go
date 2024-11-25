@@ -15,6 +15,7 @@ import (
 	"github.com/dongwlin/elf-aid-magic/public"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -69,6 +70,8 @@ func serveRun(cmd *cobra.Command, args []string) {
 }
 
 func initRouter(r fiber.Router, h *wire.Handler) {
+	r.Use(cors.New())
+
 	r.Use(filesystem.New(filesystem.Config{
 		Root:       http.FS(public.Public),
 		PathPrefix: "dist",
