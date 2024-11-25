@@ -64,7 +64,10 @@ func startRun(cmd *cobra.Command, args []string) {
 		fmt.Println("Failed to start children process. See log.json for details.")
 		os.Exit(1)
 	}
-	l.Info("success to start", zap.Int("pid", serve.Process.Pid))
+	l.Info(
+		"success to start",
+		zap.Int("pid", serve.Process.Pid),
+	)
 	fmt.Printf("Success to start, pid: %d\n", serve.Process.Pid)
 	err = os.WriteFile(pidFile, []byte(strconv.Itoa(serve.Process.Pid)), 0666)
 	if err != nil {
