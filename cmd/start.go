@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,16 +28,13 @@ func startRun(cmd *cobra.Command, args []string) {
 	defer l.Sync()
 
 	initDaemon(l)
-	if pid != -1 {
-		_, err := os.FindProcess(pid)
-		if err != nil {
-			l.Info(
-				"eam already started",
-				zap.Int("pid", pid),
-			)
-			fmt.Printf("eam already started, pid: %d\n", pid)
-			return
-		}
+	if pid != -1 && !isProcessRunning(conf, pid) {
+		l.Info(
+			"eam already started",
+			zap.Int("pid", pid),
+		)
+		fmt.Printf("eam already started, pid: %d\n", pid)
+		return
 	}
 
 	serveArgs := os.Args
@@ -77,6 +76,29 @@ func startRun(cmd *cobra.Command, args []string) {
 		)
 		fmt.Println("Failed to record pid, you may not be able to stop the program with `eam stop`. See log.json for details.")
 	}
+}
+
+func isProcessRunning(conf *config.Config, pid int) bool {
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		return false
+	}
+	if process != nil {
+		return true
+	}
+
+	resp, err := http.Get(fmt.Sprintf("http://localhost:%d/ping", conf.Server.Port))
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false
+	}
+
+	return resp.StatusCode == http.StatusOK && string(body) == "pong!!!!!"
 }
 
 func init() {
