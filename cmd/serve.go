@@ -13,6 +13,7 @@ import (
 	"github.com/dongwlin/elf-aid-magic/internal/operator"
 	"github.com/dongwlin/elf-aid-magic/internal/wire"
 	"github.com/dongwlin/elf-aid-magic/public"
+	"github.com/gofiber/contrib/fiberzap/v2"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -39,6 +40,11 @@ func serveRun(cmd *cobra.Command, args []string) {
 	h := wire.InitHandler(l, o)
 
 	app := fiber.New()
+
+	app.Use(fiberzap.New(fiberzap.Config{
+		Logger: l,
+	}))
+
 	r := app.Group("/")
 	initRouter(r, h)
 
