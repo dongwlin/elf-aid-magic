@@ -43,17 +43,8 @@ func (o *Operator) Destroy() {
 	}
 }
 
-func (o *Operator) DestroyController() {
-	if o.ctrl != nil {
-		o.ctrl.Destroy()
-		o.ctrl = nil
-	}
-}
-
 func (o *Operator) init() {
 	o.initToolkit()
-	o.initTasker()
-	o.initResource()
 }
 
 func (o *Operator) initToolkit() {
@@ -62,21 +53,38 @@ func (o *Operator) initToolkit() {
 	o.toolkit.ConfigInitOption("./", "{}")
 }
 
-func (o *Operator) initTasker() {
-	tasker := maa.NewTasker(nil)
-	o.tasker = tasker
+func (o *Operator) InitTasker() bool {
+	return o.initTasker()
 }
 
-func (o *Operator) initResource() {
+func (o *Operator) initTasker() bool {
+	tasker := maa.NewTasker(nil)
+	if tasker == nil {
+		o.logger.Error("failed to init tasker.")
+		return false
+	}
+	o.tasker = tasker
+	return true
+}
+
+func (o *Operator) InitResource() bool {
+	return o.initResource()
+}
+
+func (o *Operator) initResource() bool {
 	res := maa.NewResource(nil)
+	if res == nil {
+		o.logger.Error("failed to init resource")
+		return false
+	}
 	o.res = res
 	exePath, err := os.Executable()
 	if err != nil {
-		o.Destroy()
-		o.logger.Fatal(
+		o.logger.Error(
 			"failed to get executable path",
 			zap.Error(err),
 		)
+		return false
 	}
 	exeDir := filepath.Dir(exePath)
 	resPath := filepath.Join(exeDir, "resource", "base")
@@ -86,19 +94,20 @@ func (o *Operator) initResource() {
 		zap.String("resource path", resPath),
 	)
 	if ok := resJob.Wait().Success(); !ok {
-		o.Destroy()
-		o.logger.Fatal(
+		o.logger.Error(
 			"failed to load resource",
 			zap.String("resource", resPath),
 		)
+		return false
 	}
 
 	pipeline.Init(res)
 
 	if ok := o.tasker.BindResource(o.res); !ok {
-		o.Destroy()
-		o.logger.Fatal("failed to bind resource")
+		o.logger.Error("failed to bind resource")
+		return false
 	}
+	return true
 }
 
 func (o *Operator) InitController(ctrlType string) bool {

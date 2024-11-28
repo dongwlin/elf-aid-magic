@@ -64,12 +64,26 @@ func (l *WebsocketLogic) ProcessMessage(msg *Message) []byte {
 }
 
 func (l *WebsocketLogic) run(msg *Message) Message {
+	if !l.operator.InitTasker() {
+		l.operator.Destroy()
+		return createErrorResponse(msg.Type, "Failed to init tasker.", nil)
+	}
+
+	if !l.operator.InitResource() {
+		l.operator.Destroy()
+		return createErrorResponse(msg.Type, "Failed to init resource.", nil)
+	}
+
 	if !l.operator.InitController("adb") {
+		l.operator.Destroy()
 		return createErrorResponse(msg.Type, "Failed to init controller.", nil)
 	}
+
 	if !l.operator.Connect() {
+		l.operator.Destroy()
 		return createErrorResponse(msg.Type, "Failed to connect device.", nil)
 	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	l.ctx = ctx
 	l.cancel = cancel
@@ -77,7 +91,7 @@ func (l *WebsocketLogic) run(msg *Message) Message {
 		if l.operator.Run(l.ctx) {
 			l.completed()
 		}
-		l.operator.DestroyController()
+		l.operator.Destroy()
 	}()
 	return createSuccessResponse(msg.Type, nil, nil)
 

@@ -30,22 +30,12 @@ func runRun(_ *cobra.Command, _ []string) {
 
 	l.Info("START")
 
+	fmt.Println("Link Start!")
+
 	o := operator.New(conf, l)
 	defer o.Destroy()
 
-	fmt.Println("Link Start!")
-
-	if !o.InitController("adb") {
-		fmt.Println("Failed to init controller.")
-		o.Destroy()
-		os.Exit(1)
-	}
-
-	if !o.Connect() {
-		fmt.Println("Failed to connect device.")
-		o.Destroy()
-		os.Exit(1)
-	}
+	initOperator(o)
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -82,6 +72,32 @@ func runRun(_ *cobra.Command, _ []string) {
 		fmt.Println("Completed")
 	}
 	l.Info("END")
+}
+
+func initOperator(o *operator.Operator) {
+	if !o.InitTasker() {
+		fmt.Println("Failed to init takser.")
+		o.Destroy()
+		os.Exit(1)
+	}
+
+	if !o.InitResource() {
+		fmt.Println("Failed to init resource.")
+		o.Destroy()
+		os.Exit(1)
+	}
+
+	if !o.InitController("adb") {
+		fmt.Println("Failed to init controller.")
+		o.Destroy()
+		os.Exit(1)
+	}
+
+	if !o.Connect() {
+		fmt.Println("Failed to connect device.")
+		o.Destroy()
+		os.Exit(1)
+	}
 }
 
 func init() {
