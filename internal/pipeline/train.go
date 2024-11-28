@@ -10,7 +10,7 @@ import (
 type AutoAccelerationRecognition struct{}
 
 // Run implements maa.CustomRecognition.
-func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecognitionArg) (maa.CustomRecognitionResult, bool) {
+func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecognitionArg) (*maa.CustomRecognitionResult, bool) {
 	// recognizing rapid projectiles
 	recRapidProjectiles := maa.J{
 		"RapidProjectiles": maa.J{
@@ -21,10 +21,10 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	}
 	ret := ctx.RunRecognition("RapidProjectiles", arg.Img, recRapidProjectiles)
 	if ret == nil {
-		return maa.CustomRecognitionResult{}, false
+		return nil, false
 	}
 	if !ret.Hit {
-		return maa.CustomRecognitionResult{}, false
+		return nil, false
 	}
 
 	// check if the number of rapid projectiles is not 0
@@ -37,13 +37,13 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	}
 	ret = ctx.RunRecognition("RapidProjectilesNum", arg.Img, recRapidProjectilesNum)
 	if ret == nil {
-		return maa.CustomRecognitionResult{}, false
+		return nil, false
 	}
 	detailJson := ret.DetailJson
 	var detail OCRDetail
 	_ = json.Unmarshal([]byte(detailJson), &detail)
 	if detail.Best.Text == "0" {
-		return maa.CustomRecognitionResult{}, false
+		return nil, false
 	}
 
 	// check for imminent impact
@@ -57,11 +57,11 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	ret = ctx.RunRecognition("Strike", arg.Img, recStrike)
 	if ret != nil {
 		if ret.Hit {
-			return maa.CustomRecognitionResult{}, false
+			return nil, false
 		}
 	}
 
-	return maa.CustomRecognitionResult{
+	return &maa.CustomRecognitionResult{
 		Box: maa.Rect{X: 1002, Y: 599, W: 149, H: 121},
 	}, true
 }
