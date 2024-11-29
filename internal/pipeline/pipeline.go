@@ -1,6 +1,10 @@
 package pipeline
 
-import "github.com/MaaXYZ/maa-framework-go"
+import (
+	"github.com/MaaXYZ/maa-framework-go"
+	"github.com/dongwlin/elf-aid-magic/internal/config"
+	"go.uber.org/zap"
+)
 
 type OCRDetail struct {
 	All      []OCRDetailItem `json:"all"`
@@ -14,6 +18,7 @@ type OCRDetailItem struct {
 	Text  string  `json:"text"`
 }
 
-func Init(res *maa.Resource) {
+func Init(res *maa.Resource, conf *config.Config, logger *zap.Logger) {
 	res.RegisterCustomRecognition("RapidProjectiles", &AutoAccelerationRecognition{})
+	res.RegisterCustomRecognition("IsAppInactive", NewIsAppInactiveRecognition(conf, logger))
 }
