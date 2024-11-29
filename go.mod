@@ -4,6 +4,7 @@ go 1.22.4
 
 require (
 	github.com/MaaXYZ/maa-framework-go v1.6.0
+	github.com/gofiber/contrib/fiberzap/v2 v2.1.4
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/google/wire v0.6.0
 	github.com/spf13/cobra v1.8.1
@@ -13,7 +14,6 @@ require (
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/gofiber/contrib/fiberzap/v2 v2.1.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
