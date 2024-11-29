@@ -74,7 +74,7 @@ func (l *WebsocketLogic) run(msg *Message) Message {
 		return createErrorResponse(msg.Type, "Failed to init resource.", nil)
 	}
 
-	if !l.operator.InitController("adb") {
+	if !l.operator.InitController() {
 		l.operator.Destroy()
 		return createErrorResponse(msg.Type, "Failed to init controller.", nil)
 	}

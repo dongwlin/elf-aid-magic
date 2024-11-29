@@ -15,6 +15,11 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	id   string
+	name string
+)
+
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run elf-aid-magic.",
@@ -35,6 +40,8 @@ func runRun(_ *cobra.Command, _ []string) {
 	o := operator.New(conf, l)
 	defer o.Destroy()
 
+	o.SetTaskerID(id)
+	o.SetTaskerName(name)
 	initOperator(o)
 
 	sigs := make(chan os.Signal, 1)
@@ -87,7 +94,7 @@ func initOperator(o *operator.Operator) {
 		os.Exit(1)
 	}
 
-	if !o.InitController("adb") {
+	if !o.InitController() {
 		fmt.Println("Failed to init controller.")
 		o.Destroy()
 		os.Exit(1)
@@ -101,5 +108,7 @@ func initOperator(o *operator.Operator) {
 }
 
 func init() {
+	runCmd.PersistentFlags().StringVar(&id, "id", "", "Specify the tasker by id")
+	runCmd.PersistentFlags().StringVar(&name, "name", "", "Specify the tasker by name")
 	rootCmd.AddCommand(runCmd)
 }

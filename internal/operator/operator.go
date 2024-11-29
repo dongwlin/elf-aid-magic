@@ -14,12 +14,14 @@ import (
 )
 
 type Operator struct {
-	conf    *config.Config
-	logger  *zap.Logger
-	toolkit *maa.Toolkit
-	tasker  *maa.Tasker
-	res     *maa.Resource
-	ctrl    maa.Controller
+	conf       *config.Config
+	logger     *zap.Logger
+	toolkit    *maa.Toolkit
+	tasker     *maa.Tasker
+	res        *maa.Resource
+	ctrl       maa.Controller
+	taskerID   string
+	taskerName string
 }
 
 func New(conf *config.Config, logger *zap.Logger) *Operator {
@@ -101,7 +103,7 @@ func (o *Operator) initResource() bool {
 		return false
 	}
 
-	pipeline.Init(res)
+	pipeline.Init(res, o.conf, o.logger)
 
 	if ok := o.tasker.BindResource(o.res); !ok {
 		o.logger.Error("failed to bind resource")
@@ -110,8 +112,13 @@ func (o *Operator) initResource() bool {
 	return true
 }
 
-func (o *Operator) InitController(ctrlType string) bool {
-	switch ctrlType {
+func (o *Operator) InitController() bool {
+	tasker, ok := o.getTaskerConfig()
+	if !ok {
+		return false
+	}
+
+	switch tasker.CtrlType {
 	case "adb":
 		return o.initAdbController()
 	case "win32":
@@ -119,15 +126,21 @@ func (o *Operator) InitController(ctrlType string) bool {
 	default:
 		o.logger.Error(
 			"unknown ctrl type",
-			zap.String("ctrl type", ctrlType),
+			zap.String("ctrl type", tasker.CtrlType),
 		)
 		return false
 	}
 }
 
 func (o *Operator) initAdbController() bool {
+	tasker, ok := o.getTaskerConfig()
+	if !ok {
+		return false
+	}
+	device := tasker.AdbDevice
+
 	var adbConfigStr string
-	adbConfigData, err := json.Marshal(o.conf.Device.AdbConfig)
+	adbConfigData, err := json.Marshal(device.Config)
 	if err != nil {
 		o.logger.Error(
 			"failed to serialize adb config",
@@ -135,7 +148,7 @@ func (o *Operator) initAdbController() bool {
 		)
 		return false
 	}
-	if o.conf.Device.AdbConfig == nil {
+	if device.Config == nil {
 		adbConfigStr = "{}"
 	} else {
 		adbConfigStr = string(adbConfigData)
@@ -147,10 +160,10 @@ func (o *Operator) initAdbController() bool {
 	)
 
 	ctrl := maa.NewAdbController(
-		o.conf.Device.AdbPath,
-		o.conf.Device.SerialNumber,
-		maa.AdbScreencapMethod(o.conf.Device.Screencap),
-		maa.AdbInputMethod(o.conf.Device.Input),
+		o.conf.AdbPath,
+		device.SerialNumber,
+		device.GetScreencapMethod(),
+		device.GetInputMethod(),
 		adbConfigStr,
 		"./MaaAgentBinary",
 		nil,
@@ -162,8 +175,8 @@ func (o *Operator) initAdbController() bool {
 	o.ctrl = ctrl
 	o.logger.Info(
 		"create adb controller",
-		zap.String("path", o.conf.Device.AdbPath),
-		zap.String("address", o.conf.Device.SerialNumber),
+		zap.String("path", o.conf.AdbPath),
+		zap.String("address", device.SerialNumber),
 	)
 	if ok := o.tasker.BindController(o.ctrl); !ok {
 		o.logger.Error("failed to bind controller")
@@ -173,6 +186,12 @@ func (o *Operator) initAdbController() bool {
 }
 
 func (o *Operator) initWin32Controller() bool {
+	tasker, ok := o.getTaskerConfig()
+	if !ok {
+		return false
+	}
+	window := tasker.Win32Window
+
 	windows := o.toolkit.FindDesktopWindows()
 	var handle unsafe.Pointer
 	for _, window := range windows {
@@ -187,8 +206,8 @@ func (o *Operator) initWin32Controller() bool {
 	}
 	ctrl := maa.NewWin32Controller(
 		handle,
-		maa.Win32ScreencapMethodGDI,
-		maa.Win32InputMethodSeize,
+		window.GetScreencapMethod(),
+		window.GetInputMethod(),
 		nil,
 	)
 	if ctrl == nil {
@@ -207,11 +226,7 @@ func (o *Operator) initWin32Controller() bool {
 
 func (o *Operator) Connect() bool {
 	if !o.ctrl.PostConnect().Wait().Success() {
-		o.logger.Error(
-			"failed to connect device",
-			zap.String("path", o.conf.Device.AdbPath),
-			zap.String("address", o.conf.Device.SerialNumber),
-		)
+		o.logger.Error("failed to connect")
 		return false
 	}
 	if !o.tasker.Initialized() {
@@ -227,7 +242,12 @@ func (o *Operator) Run(ctx context.Context) bool {
 		return false
 	}
 
-	for _, task := range o.conf.Tasks {
+	tasker, ok := o.getTaskerConfig()
+	if !ok {
+		return false
+	}
+
+	for _, task := range tasker.Tasks {
 		select {
 		case <-ctx.Done():
 			o.logger.Info("operation cancelled")
@@ -272,4 +292,71 @@ func (o *Operator) Run(ctx context.Context) bool {
 
 func (o *Operator) Stop() bool {
 	return o.tasker.PostStop()
+}
+
+func (o *Operator) SetTaskerID(id string) {
+	o.taskerID = id
+}
+
+func (o *Operator) SetTaskerName(name string) {
+	o.taskerName = name
+}
+
+func (o *Operator) getTaskerConfig() (*config.TaskerConfig, bool) {
+	taskers := o.conf.Taskers
+	if len(taskers) == 0 {
+		o.logger.Error("taskers is empty")
+		return nil, false
+	}
+
+	logTaskerSelection := func(tasker *config.TaskerConfig) {
+		o.logger.Info("selected tasker",
+			zap.String("id", tasker.ID),
+			zap.String("name", tasker.Name),
+		)
+	}
+
+	if o.taskerID != "" && o.taskerName != "" {
+		for _, tasker := range taskers {
+			if tasker.ID == o.taskerID && tasker.Name == o.taskerName {
+				logTaskerSelection(tasker)
+				return tasker, true
+			}
+		}
+		o.logger.Error("no tasker found with specified id and name",
+			zap.String("id", o.taskerID),
+			zap.String("name", o.taskerName),
+		)
+		return nil, false
+	}
+
+	if o.taskerID != "" {
+		for _, tasker := range taskers {
+			if tasker.ID == o.taskerID {
+				logTaskerSelection(tasker)
+				return tasker, true
+			}
+		}
+		o.logger.Error("no tasker found with specified id",
+			zap.String("id", o.taskerID),
+		)
+		return nil, false
+	}
+
+	if o.taskerName != "" {
+		for _, tasker := range taskers {
+			if tasker.Name == o.taskerName {
+				logTaskerSelection(tasker)
+				return tasker, true
+			}
+		}
+		o.logger.Warn("no tasker found with specified name",
+			zap.String("name", o.taskerName),
+		)
+		return nil, false
+	}
+
+	o.logger.Info("no specific tasker id or name provided, defaulting to the first tasker")
+	logTaskerSelection(taskers[0])
+	return taskers[0], true
 }
