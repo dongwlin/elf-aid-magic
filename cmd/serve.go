@@ -83,6 +83,7 @@ func initRouter(r fiber.Router, h *wire.Handler) {
 		PathPrefix: "dist",
 	}))
 
+	h.Pid.Register(r)
 	h.Ping.Register(r)
 
 	ws := r.Group("/ws")

@@ -17,33 +17,38 @@ import (
 // Injectors from wire.go:
 
 func InitHandler(logger *zap.Logger, o *operator.Operator) *Handler {
+	pidLogic := logic.NewPidLogic()
+	pidHandler := handler.NewPidHandler(pidLogic)
 	pingHandler := handler.NewPingHandler()
 	versionLogic := logic.NewVersionLogic()
 	versionHandler := handler.NewVersionHandler(logger, versionLogic)
 	websocketLogic := logic.NewWebSocketLogic(o)
 	webSocketHandler := handler.NewWebSocketHandler(logger, websocketLogic)
-	wireHandler := provideHandler(pingHandler, versionHandler, webSocketHandler)
+	wireHandler := provideHandler(pidHandler, pingHandler, versionHandler, webSocketHandler)
 	return wireHandler
 }
 
 // wire.go:
 
-var logicSet = wire.NewSet(logic.NewVersionLogic, logic.NewWebSocketLogic)
+var logicSet = wire.NewSet(logic.NewPidLogic, logic.NewVersionLogic, logic.NewWebSocketLogic)
 
-var handlerSet = wire.NewSet(handler.NewPingHandler, handler.NewVersionHandler, handler.NewWebSocketHandler)
+var handlerSet = wire.NewSet(handler.NewPidHandler, handler.NewPingHandler, handler.NewVersionHandler, handler.NewWebSocketHandler)
 
 type Handler struct {
+	Pid       *handler.PidHandler
 	Ping      *handler.PingHandler
 	Vesrion   *handler.VersionHandler
 	WebSocket *handler.WebSocketHandler
 }
 
 func provideHandler(
+	pidHandler *handler.PidHandler,
 	pingHandler *handler.PingHandler,
 	versionHandler *handler.VersionHandler,
 	webSocketHandler *handler.WebSocketHandler,
 ) *Handler {
 	return &Handler{
+		Pid:       pidHandler,
 		Ping:      pingHandler,
 		Vesrion:   versionHandler,
 		WebSocket: webSocketHandler,

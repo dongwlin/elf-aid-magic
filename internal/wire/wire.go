@@ -12,28 +12,33 @@ import (
 )
 
 var logicSet = wire.NewSet(
+	logic.NewPidLogic,
 	logic.NewVersionLogic,
 	logic.NewWebSocketLogic,
 )
 
 var handlerSet = wire.NewSet(
+	handler.NewPidHandler,
 	handler.NewPingHandler,
 	handler.NewVersionHandler,
 	handler.NewWebSocketHandler,
 )
 
 type Handler struct {
+	Pid       *handler.PidHandler
 	Ping      *handler.PingHandler
 	Vesrion   *handler.VersionHandler
 	WebSocket *handler.WebSocketHandler
 }
 
 func provideHandler(
+	pidHandler *handler.PidHandler,
 	pingHandler *handler.PingHandler,
 	versionHandler *handler.VersionHandler,
 	webSocketHandler *handler.WebSocketHandler,
 ) *Handler {
 	return &Handler{
+		Pid:       pidHandler,
 		Ping:      pingHandler,
 		Vesrion:   versionHandler,
 		WebSocket: webSocketHandler,

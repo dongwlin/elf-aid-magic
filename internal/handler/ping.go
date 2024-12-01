@@ -13,5 +13,5 @@ func (h *PingHandler) Register(r fiber.Router) {
 }
 
 func (h *PingHandler) Ping(c *fiber.Ctx) error {
-	return c.SendString("pong!!!!!")
+	return c.Status(fiber.StatusOK).SendString("pong!!!!!")
 }
