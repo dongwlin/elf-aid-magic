@@ -159,11 +159,27 @@ func (o *Operator) initAdbController() bool {
 		zap.String("config", adbConfigStr),
 	)
 
+	screencap := device.GetScreencapMethod()
+	if screencap == maa.AdbScreencapMethodNone {
+		o.logger.Error("invalid adb screencap method",
+			zap.String("adb screencap method", device.Screencap),
+		)
+		return false
+	}
+
+	input := device.GetInputMethod()
+	if screencap == maa.AdbScreencapMethod(maa.AdbInputMethodNone) {
+		o.logger.Error("invalid adb input method",
+			zap.String("adb input method", device.Screencap),
+		)
+		return false
+	}
+
 	ctrl := maa.NewAdbController(
 		o.conf.AdbPath,
 		device.SerialNumber,
-		device.GetScreencapMethod(),
-		device.GetInputMethod(),
+		screencap,
+		input,
 		adbConfigStr,
 		"./MaaAgentBinary",
 		nil,
@@ -204,12 +220,24 @@ func (o *Operator) initWin32Controller() bool {
 		o.logger.Error("not found target window")
 		return false
 	}
-	ctrl := maa.NewWin32Controller(
-		handle,
-		window.GetScreencapMethod(),
-		window.GetInputMethod(),
-		nil,
-	)
+
+	screencap := window.GetScreencapMethod()
+	if screencap == maa.Win32ScreencapMethodNone {
+		o.logger.Error("invalid win32 screencap method",
+			zap.String("win32 screencap method", window.Screencap),
+		)
+		return false
+	}
+
+	input := window.GetInputMethod()
+	if input == maa.Win32InputMethodNone {
+		o.logger.Error("invalid win32 input method",
+			zap.String("win32 input method", window.Input),
+		)
+		return false
+	}
+
+	ctrl := maa.NewWin32Controller(handle, screencap, input, nil)
 	if ctrl == nil {
 		o.logger.Error("failed to init win32 controller")
 		return false
