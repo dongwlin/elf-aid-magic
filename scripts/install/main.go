@@ -4,90 +4,143 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 )
 
+const (
+	binaryNameBase = "eam"
+	binDirBase     = "bin"
+	installDirBase = "install"
+	depsDirBase    = "deps"
+	assetsDir      = "assets"
+	piCliBase      = "MaaPiCli"
+)
+
+var osMap = map[string]string{
+	"linux":   "linux",
+	"windows": "win",
+	"darwin":  "macos",
+}
+
+var archMap = map[string]string{
+	"amd64": "x86_64",
+	"arm64": "aarch64",
+}
+
 func main() {
-	var clearInstall bool
+	var (
+		targetOS, targetArch string
+		clearInstall, all    bool
+	)
+
+	flag.StringVar(&targetOS, "os", runtime.GOOS, "Target operating system")
+	flag.StringVar(&targetArch, "arch", runtime.GOARCH, "Target architecture")
 	flag.BoolVar(&clearInstall, "clear", false, "Clear install directory before installation")
+	flag.BoolVar(&all, "all", false, "Intall all operating system and architecture")
 	flag.Parse()
 
-	binaryName := "eam"
-	binDir := "bin"
-	installDir := "install"
-
-	if _, err := os.Stat(binDir); os.IsNotExist(err) {
-		fmt.Println("Error: bin directory does not exist")
-		os.Exit(1)
+	if all {
+		for _, targetOS := range osMap {
+			for _, targetArch := range archMap {
+				install(targetOS, targetArch, clearInstall)
+			}
+		}
+	} else {
+		install(targetOS, targetArch, clearInstall)
 	}
+
+}
+
+func install(targetOS, targetArch string, clearInstall bool) {
+	osArch := formatOsArch(targetOS, targetArch)
+	binDir := filepath.Join(binDirBase, osArch)
+	installDir := filepath.Join(installDirBase, osArch)
+
+	validateDirectoryExists(binDir)
 
 	if clearInstall {
-		fmt.Println("Clearing install directory...")
-		if err := os.RemoveAll(installDir); err != nil {
-			fmt.Printf("Failed to clear install directory: %v\n", err)
-			os.Exit(1)
-		}
+		removeDirectory(installDir)
 	}
 
-	if err := os.MkdirAll(installDir, 0755); err != nil {
-		fmt.Printf("Failed to create install directory: %v\n", err)
-		os.Exit(1)
+	createDirectory(installDir)
+
+	binaryName := getBinaryName()
+	if err := copyFile(filepath.Join(binDir, binaryName), filepath.Join(installDir, binaryName)); err != nil {
+		log.Fatalf("Failed to copy binary file %s: %v", binaryName, err)
 	}
 
+	installDependencies(targetOS, targetArch, installDir)
+
+	log.Println("Install completed successfully.")
+}
+
+func formatOsArch(os, arch string) string {
+	return fmt.Sprintf("%s-%s", os, arch)
+}
+
+func getBinaryName() string {
 	if runtime.GOOS == "windows" {
-		binaryName += ".exe"
+		return binaryNameBase + ".exe"
 	}
+	return binaryNameBase
+}
 
-	srcPath := filepath.Join(binDir, binaryName)
-	dstPath := filepath.Join(installDir, binaryName)
-	if err := copyFile(srcPath, dstPath); err != nil {
-		fmt.Printf("Failed to copy binary file %s: %v\n", binaryName, err)
-		os.Exit(1)
+func validateDirectoryExists(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		log.Fatalf("Error: directory %s does not exist", dir)
 	}
+}
 
-	depsDir := "deps"
+func removeDirectory(dir string) {
+	log.Println("Clearing install directory...")
+	if err := os.RemoveAll(dir); err != nil {
+		log.Fatalf("Failed to clear install directory: %v", err)
+	}
+}
+
+func createDirectory(dir string) {
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		log.Fatalf("Failed to create directory: %v", err)
+	}
+}
+
+func installDependencies(targetOS, targetArch, installDir string) {
+	depsDir := filepath.Join(depsDirBase, formatOsArch(targetOS, targetArch))
 	depsBinDir := filepath.Join(depsDir, "bin")
+
 	if err := copyDir(depsBinDir, installDir); err != nil {
-		fmt.Printf("Failed to copy deps binary directory: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Failed to copy deps binary directory: %v", err)
 	}
 
-	piCli := "MaaPiCli"
-	if runtime.GOOS == "windows" {
-		piCli += ".exe"
-
-	}
-
-	piCliPath := filepath.Join(installDir, piCli)
-	if err := os.Remove(piCliPath); err != nil {
-		fmt.Printf("Failed to remove %s: %v\n", piCliPath, err)
-		os.Exit(1)
-	}
+	removeFileIfExists(filepath.Join(installDir, getPiCliName()))
 
 	maaAgentBinaryDir := filepath.Join(depsDir, "share", "MaaAgentBinary")
-	dstPath = filepath.Join(installDir, "MaaAgentBinary")
-	if err := copyDir(maaAgentBinaryDir, dstPath); err != nil {
-		fmt.Printf("Failed to copy MaaAgentBinary directory %s: %v\n", maaAgentBinaryDir, err)
-		os.Exit(1)
+	if err := copyDir(maaAgentBinaryDir, filepath.Join(installDir, "MaaAgentBinary")); err != nil {
+		log.Fatalf("Failed to copy MaaAgentBinary directory %s: %v", maaAgentBinaryDir, err)
 	}
 
-	assetsDir := "assets"
 	resDir := filepath.Join(assetsDir, "resource")
-	dtsPath := filepath.Join(installDir, "resource")
-	if err := copyDir(resDir, dtsPath); err != nil {
-		fmt.Printf("Failed to copy resource directory %s: %v\n", resDir, err)
-		os.Exit(1)
+	if err := copyDir(resDir, filepath.Join(installDir, "resource")); err != nil {
+		log.Fatalf("Failed to copy resource directory %s: %v", resDir, err)
 	}
 
-	installConfigDir := filepath.Join(installDir, "config")
-	if err := os.MkdirAll(installConfigDir, 0755); err != nil {
-		fmt.Printf("Failed to create install config directory: %v\n", err)
-		os.Exit(1)
-	}
+	createDirectory(filepath.Join(installDir, "config"))
+}
 
-	fmt.Println("Install completed successfully.")
+func getPiCliName() string {
+	if runtime.GOOS == "windows" {
+		return piCliBase + ".exe"
+	}
+	return piCliBase
+}
+
+func removeFileIfExists(filePath string) {
+	if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
+		log.Fatalf("Failed to remove %s: %v", filePath, err)
+	}
 }
 
 func copyDir(srcDir, dstDir string) error {
@@ -96,7 +149,6 @@ func copyDir(srcDir, dstDir string) error {
 			return err
 		}
 
-		// 构建目标路径
 		relPath, err := filepath.Rel(srcDir, path)
 		if err != nil {
 			return err
@@ -104,18 +156,9 @@ func copyDir(srcDir, dstDir string) error {
 		dstPath := filepath.Join(dstDir, relPath)
 
 		if info.IsDir() {
-			// 创建目标目录
-			if err := os.MkdirAll(dstPath, info.Mode()); err != nil {
-				return err
-			}
-		} else {
-			// 复制文件
-			if err := copyFile(path, dstPath); err != nil {
-				return err
-			}
+			return os.MkdirAll(dstPath, info.Mode())
 		}
-
-		return nil
+		return copyFile(path, dstPath)
 	})
 }
 

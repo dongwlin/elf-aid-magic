@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -10,22 +11,55 @@ import (
 	"time"
 )
 
-func main() {
-	appName := "eam"
-	moduleName := "github.com/dongwlin/elf-aid-magic"
-	binDir := "bin"
+var (
+	appName    = "eam"
+	moduleName = "github.com/dongwlin/elf-aid-magic"
+	binDir     = "bin"
+)
 
-	var buildAt, goVersion, version string
+var osMap = map[string]string{
+	"linux":   "linux",
+	"windows": "win",
+	"darwin":  "macos",
+}
+
+var archMap = map[string]string{
+	"amd64": "x86_64",
+	"arm64": "aarch64",
+}
+
+func main() {
+	var (
+		buildAt, goVersion, version, targetOS, targetArch string
+		all                                               bool
+	)
 	flag.StringVar(&buildAt, "buildAt", time.Now().Format(time.RFC3339), "Build time")
 	flag.StringVar(&goVersion, "goVersion", runtime.Version(), "Go version used for build")
 	flag.StringVar(&version, "version", "dev", "Application version")
+	flag.StringVar(&targetOS, "os", runtime.GOOS, "Target operating system")
+	flag.StringVar(&targetArch, "arch", runtime.GOARCH, "Target architecture")
+	flag.BoolVar(&all, "all", false, "Build all operating system and architecture")
 	flag.Parse()
 
 	if err := os.MkdirAll(binDir, 0755); err != nil {
-		fmt.Printf("Failed to create bin directory: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Failed to create bin directory: %v\n", err)
 	}
+	if all {
+		for _, targetOS := range osMap {
+			for _, targetArch := range archMap {
+				if err := buildProject(buildAt, goVersion, version, targetOS, targetArch); err != nil {
+					log.Fatalf("Failed to build %s: %v\n", appName, err)
+				}
+			}
+		}
+	} else {
+		if err := buildProject(buildAt, goVersion, version, targetOS, targetArch); err != nil {
+			log.Fatalf("Failed to build %s: %v\n", appName, err)
+		}
+	}
+}
 
+func buildProject(buildAt, goVersion, version, targetOS, targetArch string) error {
 	xBuildAt := fmt.Sprintf("-X '%s/internal/config.BuildAt=%s'", moduleName, buildAt)
 	xGoVersion := fmt.Sprintf("-X '%s/internal/config.GoVersion=%s'", moduleName, goVersion)
 	xVersion := fmt.Sprintf("-X '%s/internal/config.Version=%s'", moduleName, version)
@@ -37,10 +71,10 @@ func main() {
 		ldflags = fmt.Sprintf("%s %s %s", xBuildAt, xGoVersion, xVersion)
 	}
 
-	fmt.Printf("Start building for %s.\n", appName)
+	log.Printf("Start building for %s on %s/%s.\n", appName, targetOS, targetArch)
 
-	outputPath := filepath.Join(".", binDir, appName)
-	if runtime.GOOS == "windows" {
+	outputPath := filepath.Join(".", binDir, fmt.Sprintf("%s-%s", targetOS, targetArch), appName)
+	if targetOS == "windows" {
 		outputPath += ".exe"
 	}
 
@@ -54,16 +88,20 @@ func main() {
 	cmd := exec.Command("go", buildCommand...)
 
 	cgoDisabled := "CGO_ENABLED=0"
-	cmd.Env = append(os.Environ(), cgoDisabled)
-
+	cmd.Env = append(os.Environ(),
+		cgoDisabled,
+		fmt.Sprintf("GOOS=%s", targetOS),
+		fmt.Sprintf("GOARCH=%s", targetArch),
+	)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
+
 	startTime := time.Now()
 	if err := cmd.Run(); err != nil {
-		fmt.Printf("Failed to build %s: %v\n", appName, err)
-		os.Exit(1)
+		return err
 	}
 	duration := time.Since(startTime)
 
-	fmt.Printf("Successed to build %s took %s.\n", appName, duration)
+	log.Printf("Successfully built %s in %s.\n", appName, duration)
+	return nil
 }

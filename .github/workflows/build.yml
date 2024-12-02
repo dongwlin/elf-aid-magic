@@ -9,6 +9,7 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
+      - "scripts/download.go"
       - "scripts/build.go"
       - "scripts/install.go"
       - "main.go"
@@ -21,6 +22,7 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
+      - "scripts/download.go"
       - "scripts/build.go"
       - "scripts/install.go"
       - "main.go"
@@ -31,62 +33,20 @@ jobs:
   meta:
     uses: ./.github/workflows/meta.yml
 
-  windows:
-    needs: meta
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        arch: [ x86_64 ]
-      fail-fast: false
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-
-      - name: Download MaaFramework
-        uses: robinraju/release-downloader@v1.10
-        with:
-          repository: MaaXYZ/MaaFramework
-          latest: true
-          fileName: "MAA-win-${{ matrix.arch }}*"
-          out-file-path: "${{ github.workspace }}/deps"
-          extract: true
-
-      - name: Build
-        run: |
-          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
-
-      - name: Install
-        run: |
-          go run ./scripts/install
-          
-      - uses: actions/upload-artifact@v4
-        with:
-          name: eam-win-${{ matrix.arch }}
-          path: "install"
-
   ubuntu:
     needs: meta
     runs-on: ubuntu-latest
     container: archlinux:base-devel
     strategy:
-      matrix:
-        arch: [ x86_64 ]
       fail-fast: false
 
     steps:
-      - name: Update system
+      - name: Update System
         run: |
           pacman -Syu --noconfirm
 
-      - name: Install dep
+      - name: Install Git
         run: |
-          pacman -Sy
           pacman -S --noconfirm git
 
       - name: Checkout
@@ -97,67 +57,59 @@ jobs:
         with:
           go-version: 'stable'
 
-      - name: Download MaaFramework
-        uses: robinraju/release-downloader@v1.10
+      - name: Cache Go modules
+        uses: actions/cache@v4
         with:
-          repository: MaaXYZ/MaaFramework
-          latest: true
-          fileName: "MAA-linux-${{ matrix.arch }}*"
-          out-file-path: "deps"
-          extract: true
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download Go modules
+        run: |
+          go mod download
+
+      - name: Download MaaFramework
+        run: |
+          go run ./scripts/download -token=${{ secrets.GITHUB_TOKEN }} --all
 
       - name: Build
         run: |
-          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
+          go run ./scripts/build -version=${{ needs.meta.outputs.tag }} --all
 
       - name: Install
         run: |
-          go run ./scripts/install
+         go run ./scripts/install --all
 
       - uses: actions/upload-artifact@v4
         with:
-          name: eam-linux-${{ matrix.arch }}
-          path: "install"
-
-  macos:
-    needs: meta
-    strategy:
-      matrix:
-        include:
-          - os: macos-13
-            arch: x86_64
-          - os: macos-14
-            arch: aarch64
-      fail-fast: false
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-
-      - name: Download MaaFramework
-        uses: robinraju/release-downloader@v1.10
-        with:
-          repository: MaaXYZ/MaaFramework
-          latest: true
-          fileName: "MAA-macos-${{ matrix.arch }}*"
-          out-file-path: "deps"
-          extract: true
-
-      - name: Build
-        run: |
-          go run ./scripts/build -version=${{ needs.meta.outputs.tag }}
-
-      - name: Install
-        run: |
-          go run ./scripts/install
+          name: eam-linux-amd64
+          path: "install/linux-amd64"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: eam-macos-${{ matrix.arch }}
-          path: "install"
+          name: eam-linux-arm64
+          path: "install/linux-arm64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-windows-amd64
+          path: "install/windows-amd64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-windows-arm64
+          path: "install/windows-arm64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-darwin-amd64
+          path: "install/darwin-amd64"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eam-darwin-arm64
+          path: "install/darwin-arm64"
+      
