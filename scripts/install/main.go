@@ -61,7 +61,7 @@ func install(targetOS, targetArch string, clearInstall bool) {
 
 	createDirectory(installDir)
 
-	binaryName := getBinaryName()
+	binaryName := getBinaryName(targetOS)
 	if err := copyFile(filepath.Join(binDir, binaryName), filepath.Join(installDir, binaryName)); err != nil {
 		log.Fatalf("Failed to copy binary file %s: %v", binaryName, err)
 	}
@@ -75,8 +75,8 @@ func formatOsArch(os, arch string) string {
 	return fmt.Sprintf("%s-%s", os, arch)
 }
 
-func getBinaryName() string {
-	if runtime.GOOS == "windows" {
+func getBinaryName(targetOS string) string {
+	if targetOS == "windows" {
 		return binaryNameBase + ".exe"
 	}
 	return binaryNameBase
