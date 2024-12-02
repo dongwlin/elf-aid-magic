@@ -19,16 +19,10 @@ const (
 	piCliBase      = "MaaPiCli"
 )
 
-var osMap = map[string]string{
-	"linux":   "linux",
-	"windows": "win",
-	"darwin":  "macos",
-}
-
-var archMap = map[string]string{
-	"amd64": "x86_64",
-	"arm64": "aarch64",
-}
+var (
+	osList   = []string{"linux", "windows", "darwin"}
+	archList = []string{"amd64", "arm64"}
+)
 
 func main() {
 	var (
@@ -43,8 +37,8 @@ func main() {
 	flag.Parse()
 
 	if all {
-		for _, targetOS := range osMap {
-			for _, targetArch := range archMap {
+		for _, targetOS := range osList {
+			for _, targetArch := range archList {
 				install(targetOS, targetArch, clearInstall)
 			}
 		}
