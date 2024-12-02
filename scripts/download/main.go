@@ -41,9 +41,6 @@ func main() {
 	flag.BoolVar(&all, "all", false, "Download all assets")
 	flag.Parse()
 
-	log.Println(token)
-	return
-
 	ctx := context.Background()
 	var client *github.Client
 
