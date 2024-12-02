@@ -109,7 +109,7 @@ func installDependencies(targetOS, targetArch, installDir string) {
 		log.Fatalf("Failed to copy deps binary directory: %v", err)
 	}
 
-	removeFileIfExists(filepath.Join(installDir, getPiCliName()))
+	removeFileIfExists(filepath.Join(installDir, getPiCliName(targetOS)))
 
 	maaAgentBinaryDir := filepath.Join(depsDir, "share", "MaaAgentBinary")
 	if err := copyDir(maaAgentBinaryDir, filepath.Join(installDir, "MaaAgentBinary")); err != nil {
@@ -124,8 +124,8 @@ func installDependencies(targetOS, targetArch, installDir string) {
 	createDirectory(filepath.Join(installDir, "config"))
 }
 
-func getPiCliName() string {
-	if runtime.GOOS == "windows" {
+func getPiCliName(targetOS string) string {
+	if targetOS == "windows" {
 		return piCliBase + ".exe"
 	}
 	return piCliBase
