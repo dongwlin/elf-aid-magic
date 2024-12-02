@@ -9,10 +9,10 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
-      - "scripts/download"
-      - "scripts/build"
-      - "scripts/install"
-      - "main"
+      - "scripts/**"
+      - "main.go"
+      - "go.mod"
+      - "go.sum"
 
   pull_request:
     branches:
@@ -22,10 +22,10 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
-      - "scripts/download"
-      - "scripts/build"
-      - "scripts/install"
+      - "scripts/**"
       - "main.go"
+      - "go.mod"
+      - "go.sum"
 
   workflow_dispatch:
 
