@@ -29,7 +29,7 @@ jobs:
           fi
           if [[ $tag != v* ]]; then
             if $is_release; then echo "::error::Failed to get tag on releasing" && exit 1; fi
-            ver_core=$(curl -sX GET "https://api.github.com/repos/MaaXYZ/MaaFramework/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]' || true)
+            ver_core=$(curl -sX GET "https://api.github.com/repos/dongwlin/elf-aid-magic/releases/latest" --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | awk '/tag_name/{print $4}' FS='["]' || true)
             tag=$(date "+$ver_core-1%m%d-${commit_hash}")
             if [[ $tag != v* ]]; then
               tag=$(date "+v%Y.%-m.%-d-2%H%M-${commit_hash}")
