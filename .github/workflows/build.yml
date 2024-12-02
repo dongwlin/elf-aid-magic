@@ -9,10 +9,10 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
-      - "scripts/download.go"
-      - "scripts/build.go"
-      - "scripts/install.go"
-      - "main.go"
+      - "scripts/download"
+      - "scripts/build"
+      - "scripts/install"
+      - "main"
 
   pull_request:
     branches:
@@ -22,9 +22,9 @@ on:
       - "assets/**"
       - "cmd/**"
       - "internal/**"
-      - "scripts/download.go"
-      - "scripts/build.go"
-      - "scripts/install.go"
+      - "scripts/download"
+      - "scripts/build"
+      - "scripts/install"
       - "main.go"
 
   workflow_dispatch:
