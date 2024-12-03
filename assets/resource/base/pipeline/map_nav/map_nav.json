@@ -1,0 +1,72 @@
+{
+    "ToManderMine": {
+        "recognition": "OCR",
+        "expected": "曼德矿场",
+        "action": "Click"
+    },
+    "ToClarityDataCenterAdminBureau": {
+        "recognition": "OCR",
+        "expected": "澄明数据中心",
+        "action": "Click"
+    },
+    "ToShoggolithCity": {
+        "recognition": "OCR",
+        "expected": "修格里城",
+        "action": "Click"
+    },
+    "ToWildernessStation": {
+        "recognition": "OCR",
+        "expected": "荒原站",
+        "action": "Click"
+    },
+    "ToYunxiuBridge": {
+        "recognition": "OCR",
+        "expected": "云岫桥基地",
+        "action": "Click"
+    },
+    "ToBRCLOutpost": {
+        "recognition": "OCR",
+        "expected": "",
+        "action": "Click"
+    },
+    "ToFreeport": {
+        "recognition": "OCR",
+        "expected": "七号自由港",
+        "action": "Click"
+    },
+    "ToAnitaWeaponResearchInstitute": {
+        "recognition": "OCR",
+        "expected": "阿妮塔战备工厂",
+        "action": "Click"
+    },
+    "ToOnederland": {
+        "recognition": "OCR",
+        "expected": "淘金乐园",
+        "action": "Click"
+    },
+    "ToAnitaRocketBase": {
+        "recognition": "OCR",
+        "expected": "阿妮塔发射中心",
+        "action": "Click"
+    },
+    "ToGongluCity": {
+        "recognition": "OCR",
+        "expected": "贡露城",
+        "action": "Click"
+    },
+    "ToCapeCity": {
+        "recognition": "OCR",
+        "expected": "海角城",
+        "action": "Click"
+    },
+    "ToConfluenceTower": {
+        "recognition": "OCR",
+        "expected": "汇流塔",
+        "action": "Click"
+    },
+    "ToAnitaEnergyResearchInstitute": {
+        "recognition": "OCR",
+        "expected": "阿妮塔能源研究所",
+        "action": "Click"
+    }
+}
