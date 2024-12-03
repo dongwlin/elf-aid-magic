@@ -1,20 +1,23 @@
-package pipeline
+package recognition
 
 import (
 	"encoding/json"
 
 	"github.com/MaaXYZ/maa-framework-go"
-	"github.com/dongwlin/elf-aid-magic/internal/pipeline/recognition"
 )
 
 type AutoAccelerationRecognition struct{}
+
+func NewAutoAccelerationRecogniation() maa.CustomRecognition {
+	return &AutoAccelerationRecognition{}
+}
 
 // Run implements maa.CustomRecognition.
 func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecognitionArg) (*maa.CustomRecognitionResult, bool) {
 	// recognizing rapid projectiles
 	recRapidProjectiles := maa.J{
 		"RapidProjectiles": maa.J{
-			"recognition": recognition.TemplateMatch,
+			"recognition": TemplateMatch,
 			"template":    "RapidProjectiles.png",
 			"roi":         []int{1002, 599, 149, 121},
 		},
@@ -30,7 +33,7 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	// check if the number of rapid projectiles is not 0
 	recRapidProjectilesNum := maa.J{
 		"RapidProjectilesNum": maa.J{
-			"recognition": recognition.OCR,
+			"recognition": OCR,
 			"roi":         []int{1059, 687, 36, 20},
 			"replace":     []string{"。", "0"},
 		},
@@ -49,7 +52,7 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	// check for imminent impact
 	recStrike := maa.J{
 		"Strike": maa.J{
-			"recognition": recognition.OCR,
+			"recognition": OCR,
 			"roi":         []int{973, 390, 73, 39},
 			"expected":    []string{"请选择", "应对方式"},
 		},
@@ -64,8 +67,4 @@ func (a *AutoAccelerationRecognition) Run(ctx *maa.Context, arg *maa.CustomRecog
 	return &maa.CustomRecognitionResult{
 		Box: maa.Rect{X: 1002, Y: 599, W: 149, H: 121},
 	}, true
-}
-
-func NewAutoAccelerationRecogniation() maa.CustomRecognition {
-	return &AutoAccelerationRecognition{}
 }

@@ -1,4 +1,4 @@
-package pipeline
+package recognition
 
 import (
 	"encoding/json"

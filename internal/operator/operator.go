@@ -9,6 +9,7 @@ import (
 
 	"github.com/MaaXYZ/maa-framework-go"
 	"github.com/dongwlin/elf-aid-magic/internal/config"
+	"github.com/dongwlin/elf-aid-magic/internal/gamemap"
 	"github.com/dongwlin/elf-aid-magic/internal/pipeline"
 	"go.uber.org/zap"
 )
@@ -103,7 +104,9 @@ func (o *Operator) initResource() bool {
 		return false
 	}
 
-	pipeline.Init(res, o.conf, o.logger)
+	navAsst := gamemap.NewNavigationAssistant()
+
+	pipeline.Register(res, o.conf, o.logger, navAsst)
 
 	if ok := o.tasker.BindResource(o.res); !ok {
 		o.logger.Error("failed to bind resource")
