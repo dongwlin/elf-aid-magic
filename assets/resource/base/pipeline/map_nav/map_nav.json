@@ -26,7 +26,7 @@
     },
     "ToBRCLOutpost": {
         "recognition": "OCR",
-        "expected": "",
+        "expected": "铁盟哨站",
         "action": "Click"
     },
     "ToFreeport": {
