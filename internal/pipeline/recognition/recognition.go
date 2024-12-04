@@ -30,6 +30,6 @@ type OCRDetailItem struct {
 }
 
 func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger) {
-	res.RegisterCustomRecognition("RapidProjectiles", NewAutoAccelerationRecogniation())
+	res.RegisterCustomRecognition("UseRapidProjectile", NewUseRapidProjectileRecogniation())
 	res.RegisterCustomRecognition("IsAppInactive", NewIsAppInactiveRecognition(conf, logger))
 }

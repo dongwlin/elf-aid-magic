@@ -1,0 +1,39 @@
+{
+    "FindRapidProjectile": {
+        "recognition": "TemplateMatch",
+        "template": "RapidProjectile.png",
+        "roi": [
+            1002,
+            599,
+            149,
+            121
+        ]
+    },
+    "RapidProjectilesNum": {
+        "recognition": "OCR",
+        "expected_code": "set in code.",
+        "replace": [
+            "。",
+            "0"
+        ],
+        "roi": [
+            1010,
+            640,
+            140,
+            80
+        ]
+    },
+    "ImpactEscapeResponse": {
+        "recognition": "OCR",
+        "expected": [
+            "请选择",
+            "应对方式"
+        ],
+        "roi": [
+            925,
+            340,
+            170,
+            140
+        ]
+    }
+}
