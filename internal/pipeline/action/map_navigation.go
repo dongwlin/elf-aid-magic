@@ -1,12 +1,14 @@
 package action
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"time"
 
 	"github.com/MaaXYZ/maa-framework-go"
 	"github.com/dongwlin/elf-aid-magic/internal/gamemap"
+	"github.com/gofiber/fiber/v2/log"
 	"go.uber.org/zap"
 )
 
@@ -22,9 +24,21 @@ func NewMapNavigationAction(logger *zap.Logger, navAsst *gamemap.NavigationAssis
 	}
 }
 
+type MapNavigationActionRunParam struct {
+	Destination string `json:"destination"`
+}
+
 // Run implements maa.CustomAction.
 func (a *MapNavigationAction) Run(ctx *maa.Context, arg *maa.CustomActionArg) bool {
-	destName := gamemap.CapeCity
+	param := &MapNavigationActionRunParam{}
+	if err := json.Unmarshal([]byte(arg.CustomActionParam), param); err != nil {
+		log.Error("failed to unmarshal for MapNavigationActionRunParam",
+			zap.String("param", arg.CustomActionParam),
+		)
+		return false
+	}
+
+	destName := param.Destination
 	a.findDestination(ctx, destName)
 
 	ctrl := ctx.GetTasker().GetController()
