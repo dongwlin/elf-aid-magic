@@ -48,8 +48,8 @@ func GetLocation(name string) (Point, bool) {
 	return point, exists
 }
 
-// GetDistance calculates the Euclidean distance between two points.
-func GetDistance(a, b Point) float64 {
+// GetStraightLineDistance calculates the Euclidean distance between two points.
+func GetStraightLineDistance(a, b Point) float64 {
 	dx := float64(b.X - a.X)
 	dy := float64(b.Y - a.Y)
 	return math.Sqrt(dx*dx + dy*dy)

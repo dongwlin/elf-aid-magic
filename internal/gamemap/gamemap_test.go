@@ -36,7 +36,7 @@ func TestGetLocation(t *testing.T) {
 	}
 }
 
-func TestGetDistance(t *testing.T) {
+func TestGetStraightLineDistance(t *testing.T) {
 	testCases := []struct {
 		Name           string
 		PointA, PointB Point
@@ -58,7 +58,7 @@ func TestGetDistance(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			distance := GetDistance(tc.PointA, tc.PointB)
+			distance := GetStraightLineDistance(tc.PointA, tc.PointB)
 			require.Equal(t, tc.ExpectDistance, distance, "Expected distance to match")
 		})
 	}

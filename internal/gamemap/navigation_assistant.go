@@ -19,9 +19,9 @@ func (na *NavigationAssistant) MoveTo(destination Point) {
 	na.currentLocation = destination
 }
 
-// DistanceTo calculates the distance from the current location to a target location.
-func (na *NavigationAssistant) DistanceTo(target Point) float64 {
-	return GetDistance(na.currentLocation, target)
+// StraightLineDistanceTo calculates the distance from the current location to a target location.
+func (na *NavigationAssistant) StraightLineDistanceTo(target Point) float64 {
+	return GetStraightLineDistance(na.currentLocation, target)
 }
 
 // AngleTo calculates the angle from the current location to a target location.
