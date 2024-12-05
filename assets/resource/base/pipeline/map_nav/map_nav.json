@@ -31,7 +31,7 @@
     },
     "ToFreeport": {
         "recognition": "OCR",
-        "expected": "七号自由港",
+        "expected": "7号自由港",
         "action": "Click"
     },
     "ToAnitaWeaponResearchInstitute": {
