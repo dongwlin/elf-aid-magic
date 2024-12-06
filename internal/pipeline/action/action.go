@@ -8,5 +8,6 @@ import (
 )
 
 func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger, taskerID string, navAsst *gamemap.NavigationAssistant) {
+	res.RegisterCustomAction("SetCurrentLocation", NewSetCurrentLocationAction(logger, navAsst))
 	res.RegisterCustomAction("MapNavigation", NewMapNavigationAction(logger, navAsst))
 }

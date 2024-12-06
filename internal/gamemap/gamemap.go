@@ -1,6 +1,8 @@
 package gamemap
 
-import "math"
+import (
+	"math"
+)
 
 // Point represents a coordinate on the map.
 type Point struct {
@@ -64,4 +66,26 @@ func GetAngle(a, b Point) float64 {
 		angle += 360 // Ensure the angle is non-negative
 	}
 	return angle
+}
+
+var zhCNLocationNames = map[string]string{
+	"曼德矿场":     ManderMine,
+	"澄明数据中心":   ClarityDataCenterAdminBureau,
+	"修格里城":     ShoggolithCity,
+	"荒原站":      WildernessStation,
+	"云岫桥基地":    YunxiuBridge,
+	"铁盟哨站":     BRCLOutpost,
+	"7号自由港":    Freeport,
+	"阿妮塔战备工厂":  AnitaWeaponResearchInstitute,
+	"淘金乐园":     Onederland,
+	"阿妮塔发射中心":  AnitaRocketBase,
+	"贡露城":      GongluCity,
+	"海角城":      CapeCity,
+	"汇流塔":      ConfluenceTower,
+	"阿妮塔能源研究所": AnitaEnergyResearchInstitute,
+}
+
+func GetLocationNameByZhCN(name string) (string, bool) {
+	locationName, exists := zhCNLocationNames[name]
+	return locationName, exists
 }

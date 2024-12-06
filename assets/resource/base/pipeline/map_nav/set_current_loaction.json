@@ -1,0 +1,12 @@
+{
+    "CurrentLocation": {
+        "recognition": "OCR",
+        "expected_code": "set in code.",
+        "roi": [
+            1018,
+            419,
+            262,
+            154
+        ]
+    }
+}
