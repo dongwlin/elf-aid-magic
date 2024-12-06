@@ -22,6 +22,10 @@
     "ToYunxiuBridge": {
         "recognition": "OCR",
         "expected": "云岫桥基地",
+        "replace": [
+            "云桥基地",
+            "云岫桥基地"
+        ],
         "action": "Click"
     },
     "ToBRCLOutpost": {
