@@ -34,7 +34,7 @@ func serveRun(cmd *cobra.Command, args []string) {
 	l := logger.New(conf)
 	defer l.Sync()
 
-	o := operator.New(conf, l)
+	o := operator.New(conf, l, "")
 	defer o.Destroy()
 
 	h := wire.InitHandler(l, o)

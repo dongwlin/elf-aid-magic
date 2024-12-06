@@ -10,14 +10,16 @@ import (
 )
 
 type IsAppInactiveRecognition struct {
-	conf   *config.Config
-	logger *zap.Logger
+	conf     *config.Config
+	logger   *zap.Logger
+	taskerID string
 }
 
-func NewIsAppInactiveRecognition(conf *config.Config, logger *zap.Logger) maa.CustomRecognition {
+func NewIsAppInactiveRecognition(conf *config.Config, logger *zap.Logger, taskerID string) maa.CustomRecognition {
 	return &IsAppInactiveRecognition{
-		conf:   conf,
-		logger: logger,
+		conf:     conf,
+		logger:   logger,
+		taskerID: taskerID,
 	}
 }
 
@@ -33,7 +35,19 @@ func (i *IsAppInactiveRecognition) Run(ctx *maa.Context, arg *maa.CustomRecognit
 		return nil, false
 	}
 
-	tasker := taskers[0]
+	var tasker *config.TaskerConfig
+	for _, t := range taskers {
+		if t.ID == i.taskerID {
+			tasker = t
+		}
+	}
+	if tasker == nil {
+		i.logger.Error("tasker id not exists",
+			zap.String("tasker id", i.taskerID),
+		)
+		return nil, false
+	}
+
 	device := tasker.AdbDevice
 
 	var param IsAppInactiveRecognitionRunParam

@@ -6,17 +6,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	DirectHit             = "DirectHit"
-	TemplateMatch         = "TemplateMatch"
-	FeatureMatch          = "FeatureMatch"
-	ColorMatch            = "ColorMatch"
-	OCR                   = "OCR"
-	NeuralNetworkClassify = "NeuralNetworkClassify"
-	NeuralNetworkDetect   = "NeuralNetworkDetect"
-	Custom                = "Custom"
-)
-
 type OCRDetail struct {
 	All      []OCRDetailItem `json:"all"`
 	Best     OCRDetailItem   `json:"best"`
@@ -29,7 +18,7 @@ type OCRDetailItem struct {
 	Text  string  `json:"text"`
 }
 
-func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger) {
+func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger, taskerID string) {
 	res.RegisterCustomRecognition("UseRapidProjectile", NewUseRapidProjectileRecogniation())
-	res.RegisterCustomRecognition("IsAppInactive", NewIsAppInactiveRecognition(conf, logger))
+	res.RegisterCustomRecognition("IsAppInactive", NewIsAppInactiveRecognition(conf, logger, taskerID))
 }

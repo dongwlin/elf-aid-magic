@@ -7,6 +7,6 @@ import (
 	"go.uber.org/zap"
 )
 
-func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger, navAsst *gamemap.NavigationAssistant) {
+func Register(res *maa.Resource, conf *config.Config, logger *zap.Logger, taskerID string, navAsst *gamemap.NavigationAssistant) {
 	res.RegisterCustomAction("MapNavigation", NewMapNavigationAction(logger, navAsst))
 }

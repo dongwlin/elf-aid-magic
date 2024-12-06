@@ -33,15 +33,21 @@ func runRun(_ *cobra.Command, _ []string) {
 	l := logger.New(conf)
 	defer l.Sync()
 
+	if name == "" {
+		id = getTaskerIDByName(conf, name)
+		if id == "" {
+			fmt.Println("tasker name not exists")
+			os.Exit(1)
+		}
+	}
+
 	l.Info("START")
 
 	fmt.Println("Link Start!")
 
-	o := operator.New(conf, l)
+	o := operator.New(conf, l, id)
 	defer o.Destroy()
 
-	o.SetTaskerID(id)
-	o.SetTaskerName(name)
 	initOperator(o)
 
 	sigs := make(chan os.Signal, 1)
@@ -79,6 +85,15 @@ func runRun(_ *cobra.Command, _ []string) {
 		fmt.Println("Completed")
 	}
 	l.Info("END")
+}
+
+func getTaskerIDByName(conf *config.Config, name string) string {
+	for _, tasker := range conf.Taskers {
+		if tasker.Name == name {
+			return tasker.ID
+		}
+	}
+	return ""
 }
 
 func initOperator(o *operator.Operator) {

@@ -15,20 +15,20 @@ import (
 )
 
 type Operator struct {
-	conf       *config.Config
-	logger     *zap.Logger
-	toolkit    *maa.Toolkit
-	tasker     *maa.Tasker
-	res        *maa.Resource
-	ctrl       maa.Controller
-	taskerID   string
-	taskerName string
+	conf     *config.Config
+	logger   *zap.Logger
+	toolkit  *maa.Toolkit
+	tasker   *maa.Tasker
+	taskerID string
+	res      *maa.Resource
+	ctrl     maa.Controller
 }
 
-func New(conf *config.Config, logger *zap.Logger) *Operator {
+func New(conf *config.Config, logger *zap.Logger, taskerID string) *Operator {
 	o := &Operator{
-		conf:   conf,
-		logger: logger,
+		conf:     conf,
+		logger:   logger,
+		taskerID: taskerID,
 	}
 	o.init()
 	return o
@@ -106,7 +106,7 @@ func (o *Operator) initResource() bool {
 
 	navAsst := gamemap.NewNavigationAssistant()
 
-	pipeline.Register(res, o.conf, o.logger, navAsst)
+	pipeline.Register(res, o.conf, o.logger, o.taskerID, navAsst)
 
 	if ok := o.tasker.BindResource(o.res); !ok {
 		o.logger.Error("failed to bind resource")
@@ -325,14 +325,6 @@ func (o *Operator) Stop() bool {
 	return o.tasker.PostStop()
 }
 
-func (o *Operator) SetTaskerID(id string) {
-	o.taskerID = id
-}
-
-func (o *Operator) SetTaskerName(name string) {
-	o.taskerName = name
-}
-
 func (o *Operator) getTaskerConfig() (*config.TaskerConfig, bool) {
 	taskers := o.conf.Taskers
 	if len(taskers) == 0 {
@@ -343,22 +335,7 @@ func (o *Operator) getTaskerConfig() (*config.TaskerConfig, bool) {
 	logTaskerSelection := func(tasker *config.TaskerConfig) {
 		o.logger.Info("selected tasker",
 			zap.String("id", tasker.ID),
-			zap.String("name", tasker.Name),
 		)
-	}
-
-	if o.taskerID != "" && o.taskerName != "" {
-		for _, tasker := range taskers {
-			if tasker.ID == o.taskerID && tasker.Name == o.taskerName {
-				logTaskerSelection(tasker)
-				return tasker, true
-			}
-		}
-		o.logger.Error("no tasker found with specified id and name",
-			zap.String("id", o.taskerID),
-			zap.String("name", o.taskerName),
-		)
-		return nil, false
 	}
 
 	if o.taskerID != "" {
@@ -374,20 +351,7 @@ func (o *Operator) getTaskerConfig() (*config.TaskerConfig, bool) {
 		return nil, false
 	}
 
-	if o.taskerName != "" {
-		for _, tasker := range taskers {
-			if tasker.Name == o.taskerName {
-				logTaskerSelection(tasker)
-				return tasker, true
-			}
-		}
-		o.logger.Warn("no tasker found with specified name",
-			zap.String("name", o.taskerName),
-		)
-		return nil, false
-	}
-
-	o.logger.Info("no specific tasker id or name provided, defaulting to the first tasker")
+	o.logger.Info("no specific tasker id provided, defaulting to the first tasker")
 	logTaskerSelection(taskers[0])
 	return taskers[0], true
 }
