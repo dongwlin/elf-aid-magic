@@ -13,8 +13,14 @@
         "recognition": "OCR",
         "expected_code": "set in code.",
         "replace": [
-            "。",
-            "0"
+            [
+                "。",
+                "0"
+            ],
+            [
+                "Q",
+                "0"
+            ]
         ],
         "roi": [
             1010,
