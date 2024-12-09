@@ -2,6 +2,7 @@ package recognition
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/MaaXYZ/maa-framework-go"
 )
@@ -29,7 +30,11 @@ func (a *UseRapidProjectileRecogniation) Run(ctx *maa.Context, arg *maa.CustomRe
 	detailJson := rapidProjectilesNumResult.DetailJson
 	var detail OCRDetail
 	_ = json.Unmarshal([]byte(detailJson), &detail)
-	if detail.Best.Text == "0" {
+	num, err := strconv.Atoi(detail.Best.Text)
+	if err != nil {
+		return nil, false
+	}
+	if num == 0 {
 		return nil, false
 	}
 
