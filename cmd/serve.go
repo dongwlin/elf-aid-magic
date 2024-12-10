@@ -34,7 +34,12 @@ func serveRun(cmd *cobra.Command, args []string) {
 	l := logger.New(conf)
 	defer l.Sync()
 
-	o := operator.New(conf, l, "")
+	if len(conf.Taskers) == 0 {
+		fmt.Println("taskers is empty")
+		os.Exit(1)
+	}
+	id = conf.Taskers[0].ID
+	o := operator.New(conf, l, id)
 	defer o.Destroy()
 
 	h := wire.InitHandler(l, o)

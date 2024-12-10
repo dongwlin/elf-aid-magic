@@ -33,12 +33,19 @@ func runRun(_ *cobra.Command, _ []string) {
 	l := logger.New(conf)
 	defer l.Sync()
 
-	if name != "" {
-		id = getTaskerIDByName(conf, name)
-		if id == "" {
-			fmt.Println("tasker name not exists")
+	if id == "" {
+		if len(conf.Taskers) == 0 {
+			fmt.Println("taskers is empty")
 			os.Exit(1)
 		}
+		id = conf.Taskers[0].ID
+	}
+	if name != "" {
+		id = getTaskerIDByName(conf, name)
+	}
+	if id == "" {
+		fmt.Println("tasker name not exists")
+		os.Exit(1)
 	}
 
 	l.Info("START")
