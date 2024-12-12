@@ -99,7 +99,7 @@ func (l *WebsocketLogic) run(msg *Message) Message {
 
 func (l *WebsocketLogic) stop(msg *Message) Message {
 	l.cancel()
-	l.operator.Stop()
+	l.operator.Stop().Wait()
 	return createSuccessResponse(msg.Type, nil, nil)
 }
 

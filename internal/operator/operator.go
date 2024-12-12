@@ -321,7 +321,7 @@ func (o *Operator) Run(ctx context.Context) bool {
 	return true
 }
 
-func (o *Operator) Stop() bool {
+func (o *Operator) Stop() *maa.TaskJob {
 	return o.tasker.PostStop()
 }
 

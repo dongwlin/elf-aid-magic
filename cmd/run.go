@@ -71,8 +71,8 @@ func runRun(_ *cobra.Command, _ []string) {
 			zap.String("signal", sig.String()),
 		)
 		stopped = true
+		o.Stop().Wait()
 		cancel()
-		o.Stop()
 	}()
 
 	go func() {
