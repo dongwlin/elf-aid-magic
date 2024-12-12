@@ -3,7 +3,7 @@ module github.com/dongwlin/elf-aid-magic
 go 1.22.4
 
 require (
-	github.com/MaaXYZ/maa-framework-go v1.6.1
+	github.com/MaaXYZ/maa-framework-go v1.7.0
 	github.com/gofiber/contrib/fiberzap/v2 v2.1.4
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/google/go-github/v67 v67.0.0
