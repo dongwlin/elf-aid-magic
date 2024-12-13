@@ -1,0 +1,184 @@
+{
+    "Startup": {
+        "next": [
+            "NeedToDownloadResourcePackage",
+            "ResourceDownloadComplete",
+            "TouchTheBlankArea",
+            "TapTheScreenToEnterTheGame",
+            "ReturnImmediatelyFlag",
+            "AutocruiseFlag",
+            "InsideTheCarriageFlag",
+            "OfficeOfTheDeputyFlag",
+            "StartResonance"
+        ]
+    },
+    "StartResonance": {
+        "action": "StartApp",
+        "package": "com.hermes.goda",
+        "post_delay": 1000,
+        "next": [
+            "NeedToDownloadResourcePackage",
+            "ResourceDownloadComplete",
+            "TouchTheBlankArea",
+            "TapTheScreenToEnterTheGame",
+            "ReturnImmediatelyFlag",
+            "AutocruiseFlag",
+            "InsideTheCarriageFlag",
+            "OfficeOfTheDeputyFlag",
+            "StartResonance"
+        ]
+    },
+    "NeedToDownloadResourcePackage": {
+        "recognition": "OCR",
+        "expected": "需要下载资源包",
+        "roi": [
+            415,
+            291,
+            277,
+            138
+        ],
+        "next": [
+            "DownloadResourcePackage",
+            "NeedToDownloadResourcePackage"
+        ]
+    },
+    "DownloadResourcePackage": {
+        "recognition": "OCR",
+        "expected": "确认",
+        "roi": [
+            589,
+            439,
+            154,
+            132
+        ],
+        "action": "Click",
+        "next": [
+            "DownloadResourcePackage",
+            "DownloadingResourcePackage"
+        ]
+    },
+    "DownloadingResourcePackage": {
+        "recognition": "OCR",
+        "expected": "%",
+        "roi": [
+            1171,
+            549,
+            109,
+            124
+        ],
+        "next": [
+            "ResourceDownloadComplete",
+            "DownloadingResourcePackage"
+        ]
+    },
+    "ResourceDownloadComplete": {
+        "recognition": "OCR",
+        "roi": [
+            412,
+            496,
+            450,
+            130
+        ],
+        "expected": [
+            "下载已完成",
+            "点击任意位置进入游戏"
+        ],
+        "action": "Click",
+        "next": [
+            "TouchTheBlankArea",
+            "TapTheScreenToEnterTheGame",
+            "ReturnImmediatelyFlag",
+            "AutocruiseFlag",
+            "InsideTheCarriageFlag",
+            "OfficeOfTheDeputyFlag",
+            "ResourceDownloadComplete"
+        ]
+    },
+    "TouchTheBlankArea": {
+        "recognition": "OCR",
+        "roi": [
+            552,
+            607,
+            212,
+            113
+        ],
+        "expected": "触碰空白区域退出",
+        "action": "Click",
+        "next": [
+            "TapTheScreenToEnterTheGame",
+            "ReturnImmediatelyFlag",
+            "AutocruiseFlag",
+            "InsideTheCarriageFlag",
+            "OfficeOfTheDeputyFlag",
+            "TouchTheBlankArea"
+        ]
+    },
+    "TapTheScreenToEnterTheGame": {
+        "recognition": "OCR",
+        "roi": [
+            506,
+            493,
+            269,
+            135
+        ],
+        "expected": "点击屏幕进入游戏",
+        "action": "Click",
+        "next": [
+            "ReturnImmediatelyFlag",
+            "AutocruiseFlag",
+            "InsideTheCarriageFlag",
+            "OfficeOfTheDeputyFlag",
+            "TapTheScreenToEnterTheGame"
+        ]
+    },
+    "ReturnImmediatelyFlag": {
+        "recognition": "OCR",
+        "roi": [
+            575,
+            64,
+            170,
+            122
+        ],
+        "expected": "立即返航"
+    },
+    "AutocruiseFlag": {
+        "recognition": "OCR",
+        "roi": [
+            567,
+            62,
+            180,
+            123
+        ],
+        "expected": "自动巡航中"
+    },
+    "InsideTheCarriageFlag": {
+        "recognition": "OCR",
+        "roi": [
+            704,
+            611,
+            145,
+            109
+        ],
+        "expected": "车厢内"
+    },
+    "OfficeOfTheDeputyFlag": {
+        "recognition": "OCR",
+        "roi": [
+            432,
+            612,
+            147,
+            108
+        ],
+        "expected": "副官室"
+    },
+    "IsAppInactive": {
+        "recognition": "Custom",
+        "custom_recognition": "IsAppInactive",
+        "custom_recognition_param": {
+            "package": "com.hermes.goda"
+        },
+        "next": [
+            "Startup"
+        ]
+    }
+}
