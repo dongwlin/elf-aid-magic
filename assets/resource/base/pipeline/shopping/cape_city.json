@@ -1,0 +1,52 @@
+{
+    "BuyCapeCityPearls": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "珍珠"
+    },
+    "BuyCapeCityLangoustines": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "大龙虾"
+    },
+    "BuyCapeCitySingleCrystalSilicons": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "单晶硅"
+    },
+    "BuyCapeCityAcademicBooks": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "学会书籍"
+    },
+    "BuyCapeCityCapeChilies": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "海角辣椒"
+    },
+    "BuyCapeCityShrimp": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "鱿鱼"
+    },
+    "BuyCapeCityHairtails": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "带鱼"
+    },
+    "BuyCapeCityLuggage": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "行李箱包"
+    },
+    "BuyCapeCityOutdoorProducts": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "户外用品"
+    },
+    "BuyCapeCityLaceDresses": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "蕾丝连衣裙"
+    }
+}

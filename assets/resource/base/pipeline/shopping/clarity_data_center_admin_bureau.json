@@ -1,0 +1,47 @@
+{
+    "BuyClarityDataCenterAdminBureauGameCassettes": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "游戏卡带"
+    },
+    "BuyClarityDataCenterAdminBureauGameConsoles": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "游戏机"
+    },
+    "BuyClarityDataCenterAdminBureauSpeakers": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "扬声器"
+    },
+    "BuyClarityDataCenterAdminBureauSilverOres": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "银矿石"
+    },
+    "BuyClarityDataCenterAdminBureauLightSticks": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "荧光棒"
+    },
+    "BuyClarityDataCenterAdminBureauVideotapes": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "录像带"
+    },
+    "BuyClarityDataCenterAdminBureauAudioTapes": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "录音带"
+    },
+    "BuyClarityDataCenterAdminBureauTrainToys": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "火车玩具"
+    },
+    "BuyClarityDataCenterAdminBureauTweedJackets": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "花呢上衣"
+    }
+}

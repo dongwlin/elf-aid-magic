@@ -1,0 +1,37 @@
+{
+    "BuyOnederlandIronOre": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "铁矿石"
+    },
+    "BuyOnederlandShakin": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "沙金"
+    },
+    "BuyOnederlandAgate": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "玛瑙"
+    },
+    "BuyOnederlandLapisLazuli": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "青金石"
+    },
+    "BuyOnederlandQuartzSand": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "石英砂"
+    },
+    "BuyOnederlandBlackSlag": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "漆黑矿渣"
+    },
+    "BuyOnederlandJeans": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "牛仔裤"
+    }
+}

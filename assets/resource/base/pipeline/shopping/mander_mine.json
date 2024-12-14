@@ -1,0 +1,52 @@
+{
+    "BuyManderMineManderToolbox": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "曼德工具箱"
+    },
+    "BuyManderMineGraphicsAcceleratorCard": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "图形加速卡"
+    },
+    "BuyManderMineTitaniumOre": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "钛矿石"
+    },
+    "BuyManderMineSandstone": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "砂石"
+    },
+    "BuyManderMineBrass": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "黄铜"
+    },
+    "BuyManderMineBuildingMaterial": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "建材"
+    },
+    "BuyManderMineStone": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "石材"
+    },
+    "BuyManderMineReinforcedConcreteSleeper": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "钢筋混凝土轨枕"
+    },
+    "BuyManderMineSpecialSteelForRailroadTrack": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "铁轨用特种钢材"
+    },
+    "BuyManderMineIronOre": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "铁矿石"
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "BuyAnitaRocketBaseHoneycombAnti-thermalAblativeMaterials": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "蜂窝防热烧蚀材料"
+    },
+    "BuyAnitaRocketBaseAerospaceSemiconductors": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "航天半导体"
+    },
+    "BuyAnitaRocketBaseSolarArrays": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "太阳电池阵"
+    },
+    "BuyAnitaRocketBaseRocketPuzzleToys": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "火箭拼装玩具"
+    },
+    "BuyAnitaRocketBaseLiquidOxygenMethaneFuels": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "液氧甲烷燃料"
+    },
+    "BuyAnitaRocketBaseBrushlessMotors": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "无刷电机"
+    },
+    "BuyAnitaRocketBaseNickel-basedHigh-temperatureAlloys": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "镍基高温合金"
+    },
+    "BuyAnitaRocketBaseHighThermalConductivityCeramics": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "高导热陶瓷"
+    }
+}

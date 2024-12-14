@@ -1,0 +1,47 @@
+{
+    "BuyConfluenceTowerKingCrabs": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "帝王蟹"
+    },
+    "BuyConfluenceTowerCodLiverOils": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "鱼肝油"
+    },
+    "BuyConfluenceTowerMemorabiliaOfTheSocieties": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "学会纪念品"
+    },
+    "BuyConfluenceTowerAromaCandles": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "香薰蜡烛"
+    },
+    "BuyConfluenceTowerQuicksilver": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "水银"
+    },
+    "BuyConfluenceTowerJapaneseSpanishMackerels": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "马鲛鱼"
+    },
+    "BuyConfluenceTowerCrayfish": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "贻贝"
+    },
+    "BuyConfluenceTowerAramidFibers": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "芳纶纤维"
+    },
+    "BuyConfluenceTowerGoats": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "山羊"
+    }
+}

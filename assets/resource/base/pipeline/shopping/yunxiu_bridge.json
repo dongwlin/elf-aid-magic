@@ -1,0 +1,52 @@
+{
+    "BuyYunxiuBridgeOvine": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "绵羊"
+    },
+    "BuyYunxiuBridgeDuck": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "鸭"
+    },
+    "BuyYunxiuBridgeSoap": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "肥皂"
+    },
+    "BuyYunxiuBridgeFacecloth": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "法兰绒"
+    },
+    "BuyYunxiuBridgeDenim": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "牛仔布"
+    },
+    "BuyYunxiuBridgeSewingKits": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "缝纫工具包"
+    },
+    "BuyYunxiuBridgeEmbroideryThread": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "绣线"
+    },
+    "BuyYunxiuBridgePolyesterFiber": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "涤纶"
+    },
+    "BuyYunxiuBridgeNylon": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "尼龙"
+    },
+    "BuyYunxiuBridgeHemp": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "亚麻"
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "BuyFreeportSpotPrawns": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "斑节虾"
+    },
+    "BuyFreeportBirchStoneFortuneTrees": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "桦石发财树"
+    },
+    "BuyFreeportArtificialCrystalFlowers": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "人工晶花"
+    },
+    "BuyFreeportBeer": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "啤酒"
+    },
+    "BuyFreeportNuts": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "坚果"
+    },
+    "BuyFreeportSeaSalt": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "海盐"
+    },
+    "BuyFreeportSpaceSouvenirs": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "航天纪念品"
+    },
+    "BuyFreeportElectronicAccessories": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "电子配件"
+    },
+    "BuyFreeportCottonT-shirts": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "纯棉T恤"
+    },
+    "BuyFreeportGraphene": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "石墨烯"
+    }
+}

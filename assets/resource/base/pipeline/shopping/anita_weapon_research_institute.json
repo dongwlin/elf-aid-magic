@@ -1,0 +1,47 @@
+{
+    "BuyAnitaWeaponResearchInstituteFire-clearStones": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "火澄石"
+    },
+    "BuyAnitaWeaponResearchInstituteAnita202MilitaryDrones": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "阿妮塔202军用无人机"
+    },
+    "BuyAnitaWeaponResearchInstituteNegativePShells": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "负片炮弹"
+    },
+    "BuyAnitaWeaponResearchInstituteMorphologyResonanceTargetings": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "形态共振瞄准器"
+    },
+    "BuyAnitaWeaponResearchInstituteHighMagneticConductivitySiliconSteelSheets": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "高导磁硅钢片"
+    },
+    "BuyAnitaWeaponResearchInstituteAnti-pollutionProtectiveClothing": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "抗污染防护服"
+    },
+    "BuyAnitaWeaponResearchInstituteBrassCoils": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "黄铜线圈"
+    },
+    "BuyAnitaWeaponResearchInstituteAluminumAlloys": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "钛合金"
+    },
+    "BuyAnitaWeaponResearchInstituteCarbonFibers": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "碳纤维"
+    }
+}

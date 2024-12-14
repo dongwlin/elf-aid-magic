@@ -1,0 +1,42 @@
+{
+    "BuyBRCLOutpostIndigoMayMilitaryFoods": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "靛红五月军用食品"
+    },
+    "BuyBRCLOutpostArtilleryShells": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "炮弹"
+    },
+    "BuyBRCLOutpostPlasticExplosives": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "塑胶炸药"
+    },
+    "BuyBRCLOutpostBullets": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "子弹"
+    },
+    "BuyBRCLOutpostDiesel": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "汽油"
+    },
+    "BuyBRCLOutpostBulletproofUndershirts": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "防弹背心"
+    },
+    "BuyBRCLOutpostSteel": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "精钢"
+    },
+    "BuyBRCLOutpostProjectileAccelerators": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "弹丸加速装置"
+    }
+}

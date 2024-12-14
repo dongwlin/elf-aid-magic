@@ -1,0 +1,37 @@
+{
+    "BuyAnitaEnergyResearchInstituteAnitaSmallBirchGenerators": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "阿妮塔小型桦树发电机"
+    },
+    "BuyAnitaEnergyResearchInstituteAnita101CivilianDrones": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "阿妮塔101民用无人机"
+    },
+    "BuyAnitaEnergyResearchInstituteHouseholdSolarPanels": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "家用太阳能电池组"
+    },
+    "BuyAnitaEnergyResearchInstituteLi-ionBatteries": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "锂电池"
+    },
+    "BuyAnitaEnergyResearchInstituteRechargeableBatteries": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "充电电池"
+    },
+    "BuyAnitaEnergyResearchInstituteNonwovens": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "无纺布"
+    },
+    "BuyAnitaEnergyResearchInstituteGrapheneBatteries": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "石墨烯电池"
+    }
+}

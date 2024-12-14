@@ -1,0 +1,52 @@
+{
+    "BuyShoggolithCityEngine": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "发动机"
+    },
+    "BuyShoggolithCityBlackTea": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "红茶"
+    },
+    "BuyShoggolithCityWardGrilledChicken": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "沃德烤鸡"
+    },
+    "BuyShoggolithCityHomeAppliances": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "家电"
+    },
+    "BuyShoggolithCityAutoParts": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "汽配零件"
+    },
+    "BuyShoggolithCityHigh-endTableware": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "高档餐具"
+    },
+    "BuyShoggolithCityCanned": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "罐头"
+    },
+    "BuyShoggolithCityWardMountainSpring": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "沃德山泉"
+    },
+    "BuyShoggolithCityCottonFabric": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "纯棉布料"
+    },
+    "BuyShoggolithCityProjectileAccelerator": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "弹丸加速装置"
+    }
+}

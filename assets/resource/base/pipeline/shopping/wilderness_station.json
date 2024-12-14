@@ -1,0 +1,37 @@
+{
+    "BuyWildernessStationAmber": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "琥珀"
+    },
+    "BuyWildernessStationMalachite": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "孔雀石"
+    },
+    "BuyWildernessStationTurquoise": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "绿松石"
+    },
+    "BuyWildernessStationLeadOre": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "铅矿石"
+    },
+    "BuyWildernessStationPlumbago": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "石墨"
+    },
+    "BuyWildernessStationpPotato": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "土豆"
+    },
+    "BuyWildernessStationWool": {
+        "enabled": false,
+        "recognition": "OCR",
+        "expected": "棉花"
+    }
+}
