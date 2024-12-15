@@ -1,5 +1,5 @@
 {
-    "BuyShoggolithCityEngine": {
+    "BuyShoggolithCityEngines": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "发动机"
@@ -29,7 +29,7 @@
         "recognition": "OCR",
         "expected": "高档餐具"
     },
-    "BuyShoggolithCityCanned": {
+    "BuyShoggolithCityCans": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "罐头"

@@ -1,25 +1,25 @@
 {
-    "BuyYunxiuBridgeOvine": {
+    "BuyYunxiuBridgeOvines": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "绵羊"
     },
-    "BuyYunxiuBridgeDuck": {
+    "BuyYunxiuBridgeDucks": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "鸭"
     },
-    "BuyYunxiuBridgeSoap": {
+    "BuyYunxiuBridgeSoaps": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "肥皂"
     },
-    "BuyYunxiuBridgeFacecloth": {
+    "BuyYunxiuBridgeFacecloths": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "法兰绒"
     },
-    "BuyYunxiuBridgeDenim": {
+    "BuyYunxiuBridgeDenims": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "牛仔布"
@@ -29,17 +29,17 @@
         "recognition": "OCR",
         "expected": "缝纫工具包"
     },
-    "BuyYunxiuBridgeEmbroideryThread": {
+    "BuyYunxiuBridgeEmbroideryThreads": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "绣线"
     },
-    "BuyYunxiuBridgePolyesterFiber": {
+    "BuyYunxiuBridgePolyesterFibers": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "涤纶"
     },
-    "BuyYunxiuBridgeNylon": {
+    "BuyYunxiuBridgeNylons": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "尼龙"

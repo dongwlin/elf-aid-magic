@@ -4,7 +4,7 @@
         "recognition": "OCR",
         "expected": "琥珀"
     },
-    "BuyWildernessStationMalachite": {
+    "BuyWildernessStationMalachites": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "孔雀石"
@@ -14,7 +14,7 @@
         "recognition": "OCR",
         "expected": "绿松石"
     },
-    "BuyWildernessStationLeadOre": {
+    "BuyWildernessStationLeadOres": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "铅矿石"
@@ -29,7 +29,7 @@
         "recognition": "OCR",
         "expected": "土豆"
     },
-    "BuyWildernessStationWool": {
+    "BuyWildernessStationWools": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "棉花"
