@@ -1,5 +1,5 @@
 {
-    "BuyOnederlandIronOre": {
+    "BuyOnederlandIronOres": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "铁矿石"
@@ -9,7 +9,7 @@
         "recognition": "OCR",
         "expected": "沙金"
     },
-    "BuyOnederlandAgate": {
+    "BuyOnederlandAgates": {
         "enabled": false,
         "recognition": "OCR",
         "expected": "玛瑙"
