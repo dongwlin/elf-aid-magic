@@ -25,6 +25,7 @@ const (
 	CapeCity                     = "CapeCity"
 	ConfluenceTower              = "ConfluenceTower"
 	AnitaEnergyResearchInstitute = "AnitaEnergyResearchInstitute"
+	YuanxingBridge               = "YuanxingBridge"
 )
 
 var locationMap = map[string]Point{
@@ -42,6 +43,7 @@ var locationMap = map[string]Point{
 	CapeCity:                     {2995, 12830},
 	ConfluenceTower:              {660, 12830},
 	AnitaEnergyResearchInstitute: {4495, 7495},
+	YuanxingBridge:               {7660, 10160},
 }
 
 // GetLocation returns the Point for a given location name.
@@ -83,6 +85,7 @@ var zhCNLocationNames = map[string]string{
 	"海角城":      CapeCity,
 	"汇流塔":      ConfluenceTower,
 	"阿妮塔能源研究所": AnitaEnergyResearchInstitute,
+	"远星大桥":     YuanxingBridge,
 }
 
 func GetLocationNameByZhCN(name string) (string, bool) {
