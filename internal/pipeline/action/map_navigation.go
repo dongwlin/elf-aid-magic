@@ -58,6 +58,7 @@ func (a *MapNavigationAction) Run(ctx *maa.Context, arg *maa.CustomActionArg) bo
 
 	for !a.findDestination(ctx, destName) {
 		ctrl.PostSwipe(int32(start.X), int32(start.Y), int32(end.X), int32(end.Y), 500*time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	return true
