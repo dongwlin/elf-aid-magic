@@ -2,22 +2,46 @@
     "ToManderMine": {
         "recognition": "OCR",
         "expected": "曼德矿场",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToClarityDataCenterAdminBureau": {
         "recognition": "OCR",
         "expected": "澄明数据中心",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToShoggolithCity": {
         "recognition": "OCR",
         "expected": "修格里城",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToWildernessStation": {
         "recognition": "OCR",
         "expected": "荒原站",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToYunxiuBridge": {
         "recognition": "OCR",
@@ -26,51 +50,122 @@
             "云桥基地",
             "云岫桥基地"
         ],
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToBRCLOutpost": {
         "recognition": "OCR",
         "expected": "铁盟哨站",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToFreeport": {
         "recognition": "OCR",
         "expected": "7号自由港",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToAnitaWeaponResearchInstitute": {
         "recognition": "OCR",
         "expected": "阿妮塔战备工厂",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToOnederland": {
         "recognition": "OCR",
         "expected": "淘金乐园",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToAnitaRocketBase": {
         "recognition": "OCR",
         "expected": "阿妮塔发射中心",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToGongluCity": {
         "recognition": "OCR",
         "expected": "贡露城",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToCapeCity": {
         "recognition": "OCR",
         "expected": "海角城",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToConfluenceTower": {
         "recognition": "OCR",
         "expected": "汇流塔",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     },
     "ToAnitaEnergyResearchInstitute": {
         "recognition": "OCR",
         "expected": "阿妮塔能源研究所",
-        "action": "Click"
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
+    },
+    "ToYuanxingBridge": {
+        "recognition": "OCR",
+        "expected": "远星大桥",
+        "action": "Click",
+        "target_offset": [
+            10,
+            -30,
+            -20,
+            0
+        ]
     }
 }
