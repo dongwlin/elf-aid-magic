@@ -77,8 +77,8 @@ func createMessage(logger *zap.Logger, msgType, action, event, status, message s
 	}
 }
 
-func Createrequest(logger *zap.Logger, action, status, message string, data map[string]interface{}) Message {
-	return createMessage(logger, TypeRequest, action, "", status, message, data)
+func Createrequest(logger *zap.Logger, action string, data map[string]interface{}) Message {
+	return createMessage(logger, TypeRequest, action, "", "", "", data)
 }
 
 func CreateResponse(logger *zap.Logger, action, status, message string, data map[string]interface{}) Message {
