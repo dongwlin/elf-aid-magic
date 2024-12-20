@@ -15,20 +15,20 @@ import (
 )
 
 type Operator struct {
-	conf     *config.Config
-	logger   *zap.Logger
-	toolkit  *maa.Toolkit
-	tasker   *maa.Tasker
-	taskerID string
-	res      *maa.Resource
-	ctrl     maa.Controller
+	ID      string
+	conf    *config.Config
+	logger  *zap.Logger
+	toolkit *maa.Toolkit
+	tasker  *maa.Tasker
+	res     *maa.Resource
+	ctrl    maa.Controller
 }
 
-func New(conf *config.Config, logger *zap.Logger, taskerID string) *Operator {
+func New(conf *config.Config, logger *zap.Logger, id string) *Operator {
 	o := &Operator{
-		conf:     conf,
-		logger:   logger,
-		taskerID: taskerID,
+		conf:   conf,
+		logger: logger,
+		ID:     id,
 	}
 	o.init()
 	return o
@@ -106,7 +106,7 @@ func (o *Operator) initResource() bool {
 
 	navAsst := gamemap.NewNavigationAssistant()
 
-	pipeline.Register(res, o.conf, o.logger, o.taskerID, navAsst)
+	pipeline.Register(res, o.conf, o.logger, o.ID, navAsst)
 
 	if ok := o.tasker.BindResource(o.res); !ok {
 		o.logger.Error("failed to bind resource")
@@ -338,15 +338,15 @@ func (o *Operator) getTaskerConfig() (*config.TaskerConfig, bool) {
 		)
 	}
 
-	if o.taskerID != "" {
+	if o.ID != "" {
 		for _, tasker := range taskers {
-			if tasker.ID == o.taskerID {
+			if tasker.ID == o.ID {
 				logTaskerSelection(tasker)
 				return tasker, true
 			}
 		}
 		o.logger.Error("no tasker found with specified id",
-			zap.String("id", o.taskerID),
+			zap.String("id", o.ID),
 		)
 		return nil, false
 	}

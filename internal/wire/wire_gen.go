@@ -16,13 +16,13 @@ import (
 
 // Injectors from wire.go:
 
-func InitHandler(logger *zap.Logger, o *operator.Operator) *Handler {
+func InitHandler(logger *zap.Logger, om *operator.Manager) *Handler {
 	pidLogic := logic.NewPidLogic()
 	pidHandler := handler.NewPidHandler(pidLogic)
 	pingHandler := handler.NewPingHandler()
 	versionLogic := logic.NewVersionLogic()
 	versionHandler := handler.NewVersionHandler(logger, versionLogic)
-	websocketLogic := logic.NewWebSocketLogic(o)
+	websocketLogic := logic.NewWebSocketLogic(logger, om)
 	webSocketHandler := handler.NewWebSocketHandler(logger, websocketLogic)
 	wireHandler := provideHandler(pidHandler, pingHandler, versionHandler, webSocketHandler)
 	return wireHandler

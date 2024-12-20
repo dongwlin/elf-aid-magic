@@ -45,7 +45,7 @@ func provideHandler(
 	}
 }
 
-func InitHandler(logger *zap.Logger, o *operator.Operator) *Handler {
+func InitHandler(logger *zap.Logger, om *operator.Manager) *Handler {
 	wire.Build(logicSet, handlerSet, provideHandler)
 	return nil
 }

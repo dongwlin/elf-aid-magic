@@ -3,9 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"sync"
-	"time"
 
 	"github.com/dongwlin/elf-aid-magic/internal/logic"
+	"github.com/dongwlin/elf-aid-magic/internal/message"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -37,13 +37,6 @@ func (h *WebSocketHandler) Register(r fiber.Router) {
 	r.Get("/", websocket.New(h.WebSocket))
 }
 
-type Message struct {
-	Type     string                 `json:"type"`
-	Time     time.Time              `json:"time"`
-	Payload  map[string]interface{} `json:"payload"`
-	Metadata map[string]interface{} `json:"metadata"`
-}
-
 func (h *WebSocketHandler) WebSocket(c *websocket.Conn) {
 	h.connMutex.Lock()
 	h.connections[c] = true
@@ -70,7 +63,7 @@ func (h *WebSocketHandler) WebSocket(c *websocket.Conn) {
 			break
 		}
 
-		var msg Message
+		var msg message.Message
 		err = json.Unmarshal(msgBuf, &msg)
 		if err != nil {
 			h.logger.Error(
@@ -83,16 +76,10 @@ func (h *WebSocketHandler) WebSocket(c *websocket.Conn) {
 			"recv msg",
 			zap.String("type", msg.Type),
 			zap.Time("time", msg.Time),
-			zap.Any("payload", msg.Payload),
-			zap.Any("metadata", msg.Metadata),
+			zap.Any("payload", msg.Data),
 		)
 
-		resp := h.webSocketLogic.ProcessMessage(&logic.Message{
-			Type:     msg.Type,
-			Time:     msg.Time,
-			Payload:  msg.Payload,
-			Metadata: msg.Metadata,
-		})
+		resp := h.webSocketLogic.ProcessMessage(&msg)
 
 		if err = c.WriteMessage(mt, resp); err != nil {
 			h.logger.Error(

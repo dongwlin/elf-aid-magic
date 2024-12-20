@@ -3,24 +3,27 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"time"
 
+	"github.com/dongwlin/elf-aid-magic/internal/message"
 	"github.com/dongwlin/elf-aid-magic/internal/operator"
 	"github.com/gofiber/contrib/websocket"
+	"go.uber.org/zap"
 )
 
 type SendFunction func(msgType int, message []byte)
 
 type WebsocketLogic struct {
-	operator *operator.Operator
-	sendFunc SendFunction
-	ctx      context.Context
-	cancel   context.CancelFunc
+	logger          *zap.Logger
+	operatorManager *operator.Manager
+	sendFunc        SendFunction
+	ctx             context.Context
+	cancel          context.CancelFunc
 }
 
-func NewWebSocketLogic(o *operator.Operator) *WebsocketLogic {
+func NewWebSocketLogic(logger *zap.Logger, om *operator.Manager) *WebsocketLogic {
 	return &WebsocketLogic{
-		operator: o,
+		logger:          logger,
+		operatorManager: om,
 	}
 }
 
@@ -34,15 +37,8 @@ func (l *WebsocketLogic) SendBroadcastMessage(msgType int, message []byte) {
 	}
 }
 
-type Message struct {
-	Type     string                 `json:"type"`
-	Time     time.Time              `json:"time"`
-	Payload  map[string]interface{} `json:"payload"`
-	Metadata map[string]interface{} `json:"metadata"`
-}
-
-func (l *WebsocketLogic) ProcessMessage(msg *Message) []byte {
-	var resp Message
+func (l *WebsocketLogic) ProcessMessage(msg *message.Message) []byte {
+	var resp message.Message
 
 	switch msg.Type {
 	case "run":
@@ -50,12 +46,12 @@ func (l *WebsocketLogic) ProcessMessage(msg *Message) []byte {
 	case "stop":
 		resp = l.stop(msg)
 	default:
-		resp = createErrorResponse(msg.Type, "Unknown message type.", nil)
+		resp = message.CreateResponse(l.logger, msg.Action, message.StatusError, "Unknown message action.", nil)
 	}
 
 	respBytes, err := json.Marshal(resp)
 	if err != nil {
-		errResponse := createErrorResponse(msg.Type, "Failed to serialize response.", nil)
+		errResponse := message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to serialize response.", nil)
 		respBytes, _ = json.Marshal(errResponse)
 	}
 
@@ -63,87 +59,87 @@ func (l *WebsocketLogic) ProcessMessage(msg *Message) []byte {
 
 }
 
-func (l *WebsocketLogic) run(msg *Message) Message {
-	if !l.operator.InitTasker() {
-		l.operator.Destroy()
-		return createErrorResponse(msg.Type, "Failed to init tasker.", nil)
+type MessageRunRequestData struct {
+	TaskerID string `json:"tasker_id"`
+}
+
+func (l *WebsocketLogic) run(msg *message.Message) message.Message {
+	var data MessageRunRequestData
+	if err := json.Unmarshal(msg.Data, &data); err != nil {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to unserialize request data.", nil)
 	}
 
-	if !l.operator.InitResource() {
-		l.operator.Destroy()
-		return createErrorResponse(msg.Type, "Failed to init resource.", nil)
+	if data.TaskerID == "" {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Tasker ID is empty.", nil)
 	}
 
-	if !l.operator.InitController() {
-		l.operator.Destroy()
-		return createErrorResponse(msg.Type, "Failed to init controller.", nil)
+	operator, exists := l.operatorManager.GetOperatorByID(data.TaskerID)
+	if !exists {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Operator don't exists.", nil)
+	}
+	if !operator.InitTasker() {
+		operator.Destroy()
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to init tasker.", nil)
 	}
 
-	if !l.operator.Connect() {
-		l.operator.Destroy()
-		return createErrorResponse(msg.Type, "Failed to connect device.", nil)
+	if !operator.InitResource() {
+		operator.Destroy()
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to init resource.", nil)
+	}
+
+	if !operator.InitController() {
+		operator.Destroy()
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to init controller.", nil)
+	}
+
+	if !operator.Connect() {
+		operator.Destroy()
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to connect device.", nil)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	l.ctx = ctx
 	l.cancel = cancel
 	go func() {
-		if l.operator.Run(l.ctx) {
+		if operator.Run(l.ctx) {
 			l.completed()
 		}
-		l.operator.Destroy()
+		operator.Destroy()
 	}()
-	return createSuccessResponse(msg.Type, nil, nil)
+	return message.CreateResponse(l.logger, msg.Action, message.StatusSuccess, "Success", nil)
 
 }
 
-func (l *WebsocketLogic) stop(msg *Message) Message {
+type MessageStopRequestData struct {
+	TaskerID string `json:"tasker_id"`
+}
+
+func (l *WebsocketLogic) stop(msg *message.Message) message.Message {
 	l.cancel()
-	l.operator.Stop().Wait()
-	return createSuccessResponse(msg.Type, nil, nil)
+
+	var data MessageStopRequestData
+	if err := json.Unmarshal(msg.Data, &data); err != nil {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to unserialize request data.", nil)
+	}
+
+	if data.TaskerID == "" {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Tasker ID is empty.", nil)
+	}
+
+	operator, exists := l.operatorManager.GetOperatorByID(data.TaskerID)
+	if !exists {
+		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Operator don't exists.", nil)
+	}
+	operator.Stop().Wait()
+	return message.CreateResponse(l.logger, msg.Action, message.StatusSuccess, "Success", nil)
 }
 
 func (l *WebsocketLogic) completed() {
-	msg := createMessage("run_completed", nil, nil)
+	msg := message.CreateEvent(l.logger, "run_completed", nil)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
-		errResponse := createErrorResponse(msg.Type, "Failed to serialize response.", nil)
+		errResponse := message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to serialize response.", nil)
 		msgBytes, _ = json.Marshal(errResponse)
 	}
 	l.SendBroadcastMessage(websocket.TextMessage, msgBytes)
-}
-
-func createMessage(msgType string, payload map[string]interface{}, metadata map[string]interface{}) Message {
-	return Message{
-		Type:     msgType,
-		Time:     time.Now(),
-		Payload:  payload,
-		Metadata: metadata,
-	}
-}
-
-func createResponse(requestType string, payload map[string]interface{}, metadata map[string]interface{}) Message {
-	return createMessage(requestType+"_response", payload, metadata)
-}
-
-func createSuccessResponse(requestType string, data map[string]interface{}, metadata map[string]interface{}) Message {
-	return createResponse(
-		requestType,
-		map[string]interface{}{
-			"success": true,
-			"data":    data,
-		},
-		metadata,
-	)
-}
-
-func createErrorResponse(requestType string, err string, metadate map[string]interface{}) Message {
-	return createResponse(
-		requestType,
-		map[string]interface{}{
-			"success": false,
-			"error":   err,
-		},
-		metadate,
-	)
 }
