@@ -7,6 +7,26 @@ import (
 	"go.uber.org/zap"
 )
 
+// Message represents the structure of a WebSocket message used in the application.
+// It supports both request-response and event-driven communication patterns.
+//
+// Fields for request-response messages:
+// - Type:    The type of message, either "request" or "response".
+// - Action:  Specifies the action to be performed (e.g., "startTask").
+// - Status:  Indicates the status of the response ("success" or "error").
+// - Message: Optional descriptive information, such as error details or success messages.
+// - Data:    Contains the payload of the request or response.
+// - Time:    Timestamp of when the message was created.
+//
+// Fields for event messages:
+// - Type:    The type of message, always "event".
+// - Event:   Specifies the name of the event (e.g., "taskProgress").
+// - Data:    Contains the event payload.
+// - Time:    Timestamp of when the event was created.
+//
+// Notes:
+// - The "Action", "Status" and "Message" fields are omitted for event messages.
+// - The "Event" field is omitted for request-response messages.
 type Message struct {
 	Type    string          `json:"type"` // request | response | event
 	Action  string          `json:"action,omitempty"`
