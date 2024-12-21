@@ -51,30 +51,21 @@ const (
 )
 
 func logDataMarshalError(logger *zap.Logger, err error, msgType, action, event string, data map[string]interface{}) {
-	switch msgType {
-	case TypeRequest, TypeResponse:
-		logger.Error("Failed to marshal message data.",
-			zap.Error(err),
-			zap.String("type", msgType),
-			zap.String("action", action),
-			zap.Any("data", data),
-		)
-	case TypeEvent:
-		logger.Error("Failed to marshal message data.",
-			zap.Error(err),
-			zap.String("type", msgType),
-			zap.String("event", event),
-			zap.Any("data", data),
-		)
-	default:
-		logger.Error("Message type is empty or unknown.",
-			zap.Error(err),
-			zap.String("type", msgType),
-			zap.String("action", action),
-			zap.String("event", event),
-			zap.Any("data", data),
-		)
+	fields := []zap.Field{
+		zap.Error(err),
+		zap.String("type", msgType),
+		zap.Any("data", data),
 	}
+
+	if msgType == TypeRequest || msgType == TypeResponse {
+		fields = append(fields, zap.String("action", action))
+	} else if msgType == TypeEvent {
+		fields = append(fields, zap.String("event", event))
+	} else {
+		fields = append(fields, zap.String("action", action), zap.String("event", event))
+	}
+
+	logger.Error("Failed to marshal message data.", fields...)
 }
 
 func createMessage(logger *zap.Logger, msgType, action, event, status, message string, data map[string]interface{}) Message {
