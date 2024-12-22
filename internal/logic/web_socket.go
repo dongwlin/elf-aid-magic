@@ -220,10 +220,6 @@ func (l *WebSocketLogic) completed(taskerID string) {
 		TaskerID: taskerID,
 	}
 	msg := message.CreateEvent(l.logger, "completed", data)
-	msgBytes, err := json.Marshal(msg)
-	if err != nil {
-		errResponse := message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to serialize response.", nil)
-		msgBytes, _ = json.Marshal(errResponse)
-	}
+	msgBytes := serializeMessage(l.logger, msg)
 	l.broadcastMessage(websocket.TextMessage, msgBytes)
 }
