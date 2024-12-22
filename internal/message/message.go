@@ -50,7 +50,7 @@ const (
 	StatusError   = "error"
 )
 
-func logDataMarshalError(logger *zap.Logger, err error, msgType, action, event string, data map[string]interface{}) {
+func logDataMarshalError(logger *zap.Logger, err error, msgType, action, event string, data interface{}) {
 	fields := []zap.Field{
 		zap.Error(err),
 		zap.String("type", msgType),
@@ -68,7 +68,7 @@ func logDataMarshalError(logger *zap.Logger, err error, msgType, action, event s
 	logger.Error("Failed to marshal message data.", fields...)
 }
 
-func createMessage(logger *zap.Logger, msgType, action, event, status, message string, data map[string]interface{}) Message {
+func createMessage(logger *zap.Logger, msgType, action, event, status, message string, data interface{}) Message {
 	if data == nil {
 		data = map[string]interface{}{}
 	}
@@ -88,14 +88,14 @@ func createMessage(logger *zap.Logger, msgType, action, event, status, message s
 	}
 }
 
-func CreateRequest(logger *zap.Logger, action string, data map[string]interface{}) Message {
+func CreateRequest(logger *zap.Logger, action string, data interface{}) Message {
 	return createMessage(logger, TypeRequest, action, "", "", "", data)
 }
 
-func CreateResponse(logger *zap.Logger, action, status, message string, data map[string]interface{}) Message {
+func CreateResponse(logger *zap.Logger, action, status, message string, data interface{}) Message {
 	return createMessage(logger, TypeResponse, action, "", status, message, data)
 }
 
-func CreateEvent(logger *zap.Logger, event string, data map[string]interface{}) Message {
+func CreateEvent(logger *zap.Logger, event string, data interface{}) Message {
 	return createMessage(logger, TypeEvent, "", event, "", "", data)
 }
