@@ -25,11 +25,9 @@ func NewWebSocketHandler(logger *zap.Logger, webSocketLogic *logic.WebsocketLogi
 		connections:    make(map[*websocket.Conn]bool),
 	}
 
-	sendFunc := func(msgType int, message []byte) {
-		handler.BroadcastMessage(msgType, message)
-	}
+	webSocketLogic.SetSendMessageFunc(handler.SendMessage)
+	webSocketLogic.SetBroadcastMessageFunc(handler.BroadcastMessage)
 
-	webSocketLogic.SetSendFunction(sendFunc)
 	return handler
 }
 
@@ -38,52 +36,12 @@ func (h *WebSocketHandler) Register(r fiber.Router) {
 }
 
 func (h *WebSocketHandler) WebSocket(c *websocket.Conn) {
-	h.connMutex.Lock()
-	h.connections[c] = true
-	h.connMutex.Unlock()
+	h.addConnection(c)
+	defer h.removeConnection(c)
 
-	defer func() {
-		h.connMutex.Lock()
-		delete(h.connections, c)
-		h.connMutex.Unlock()
-		c.Close()
-	}()
-
-	var (
-		mt     int
-		msgBuf []byte
-		err    error
-	)
 	for {
-		if mt, msgBuf, err = c.ReadMessage(); err != nil {
-			h.logger.Error(
-				"failed to read msg",
-				zap.Error(err),
-			)
-			break
-		}
-
-		var msg message.Message
-		err = json.Unmarshal(msgBuf, &msg)
-		if err != nil {
-			h.logger.Error(
-				"failed to unmarshal msg",
-				zap.Error(err),
-			)
-			break
-		}
-		h.logger.Info(
-			"recv msg",
-			zap.String("type", msg.Type),
-			zap.Time("time", msg.Time),
-			zap.Any("payload", msg.Data),
-		)
-
-		resp := h.webSocketLogic.ProcessMessage(&msg)
-
-		if err = c.WriteMessage(mt, resp); err != nil {
-			h.logger.Error(
-				"failed to write msg",
+		if err := h.handleConnection(c); err != nil {
+			h.logger.Error("connection error",
 				zap.Error(err),
 			)
 			break
@@ -92,13 +50,68 @@ func (h *WebSocketHandler) WebSocket(c *websocket.Conn) {
 
 }
 
+func (h *WebSocketHandler) addConnection(c *websocket.Conn) {
+	h.connMutex.Lock()
+	defer h.connMutex.Unlock()
+	h.connections[c] = true
+}
+
+func (h *WebSocketHandler) removeConnection(c *websocket.Conn) {
+	h.connMutex.Lock()
+	defer h.connMutex.Unlock()
+	delete(h.connections, c)
+	c.Close()
+}
+
+func (h *WebSocketHandler) handleConnection(c *websocket.Conn) error {
+	msgType, msgBuf, err := c.ReadMessage()
+	if err != nil {
+		h.logger.Error("failed to read message",
+			zap.Error(err),
+		)
+		return err
+	}
+
+	var msg message.Message
+	err = json.Unmarshal(msgBuf, &msg)
+	if err != nil {
+		h.logger.Error("failed to unmarshal message",
+			zap.Error(err),
+		)
+		return err
+	}
+
+	h.webSocketLogic.ProcessMessage(c, msgType, &msg)
+
+	return nil
+}
+
+func (h *WebSocketHandler) SendMessage(conn *websocket.Conn, msgType int, message []byte) error {
+	h.connMutex.Lock()
+	defer h.connMutex.Unlock()
+
+	if _, exists := h.connections[conn]; exists {
+		if err := conn.WriteMessage(msgType, message); err != nil {
+			h.logger.Error("Failed to send message.",
+				zap.Error(err),
+			)
+			conn.Close()
+			delete(h.connections, conn)
+			return err
+		}
+	}
+	return nil
+}
+
 func (h *WebSocketHandler) BroadcastMessage(msgType int, message []byte) {
 	h.connMutex.Lock()
 	defer h.connMutex.Unlock()
 
 	for conn := range h.connections {
 		if err := conn.WriteMessage(msgType, message); err != nil {
-			h.logger.Error("failed to send message", zap.Error(err))
+			h.logger.Error("Failed to send message by broadcast.",
+				zap.Error(err),
+			)
 			conn.Close()
 			delete(h.connections, conn)
 		}
