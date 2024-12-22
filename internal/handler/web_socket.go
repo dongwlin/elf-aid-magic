@@ -13,12 +13,12 @@ import (
 
 type WebSocketHandler struct {
 	logger         *zap.Logger
-	webSocketLogic *logic.WebsocketLogic
+	webSocketLogic *logic.WebSocketLogic
 	connections    map[*websocket.Conn]bool
 	connMutex      sync.Mutex
 }
 
-func NewWebSocketHandler(logger *zap.Logger, webSocketLogic *logic.WebsocketLogic) *WebSocketHandler {
+func NewWebSocketHandler(logger *zap.Logger, webSocketLogic *logic.WebSocketLogic) *WebSocketHandler {
 	handler := &WebSocketHandler{
 		logger:         logger,
 		webSocketLogic: webSocketLogic,

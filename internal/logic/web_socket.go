@@ -15,7 +15,7 @@ type SendMessageFunc func(conn *websocket.Conn, msgType int, msg []byte) error
 
 type BroadcastMessageFunc func(msgType int, msg []byte)
 
-type WebsocketLogic struct {
+type WebSocketLogic struct {
 	logger               *zap.Logger
 	operatorManager      *operator.Manager
 	sendMessageFunc      SendMessageFunc
@@ -24,35 +24,35 @@ type WebsocketLogic struct {
 	cancel               context.CancelFunc
 }
 
-func NewWebSocketLogic(logger *zap.Logger, om *operator.Manager) *WebsocketLogic {
-	return &WebsocketLogic{
+func NewWebSocketLogic(logger *zap.Logger, om *operator.Manager) *WebSocketLogic {
+	return &WebSocketLogic{
 		logger:          logger,
 		operatorManager: om,
 	}
 }
 
-func (l *WebsocketLogic) SetSendMessageFunc(sendMessageFunc SendMessageFunc) {
+func (l *WebSocketLogic) SetSendMessageFunc(sendMessageFunc SendMessageFunc) {
 	l.sendMessageFunc = sendMessageFunc
 }
 
-func (l *WebsocketLogic) sendMessage(conn *websocket.Conn, msgType int, message []byte) error {
+func (l *WebSocketLogic) sendMessage(conn *websocket.Conn, msgType int, message []byte) error {
 	if l.sendMessageFunc != nil {
 		return l.sendMessageFunc(conn, msgType, message)
 	}
 	return errors.New("WebSocketLogic sendMessageFunc is nil")
 }
 
-func (l *WebsocketLogic) SetBroadcastMessageFunc(broadcastMessageFunc BroadcastMessageFunc) {
+func (l *WebSocketLogic) SetBroadcastMessageFunc(broadcastMessageFunc BroadcastMessageFunc) {
 	l.broadcastMessageFunc = broadcastMessageFunc
 }
 
-func (l *WebsocketLogic) broadcastMessage(msgType int, message []byte) {
+func (l *WebSocketLogic) broadcastMessage(msgType int, message []byte) {
 	if l.broadcastMessageFunc != nil {
 		l.broadcastMessageFunc(msgType, message)
 	}
 }
 
-func (l *WebsocketLogic) ProcessMessage(conn *websocket.Conn, msgType int, msg *message.Message) {
+func (l *WebSocketLogic) ProcessMessage(conn *websocket.Conn, msgType int, msg *message.Message) {
 	switch msg.Type {
 	case message.TypeRequest:
 		l.handleRequest(conn, msgType, msg)
@@ -65,7 +65,7 @@ func (l *WebsocketLogic) ProcessMessage(conn *websocket.Conn, msgType int, msg *
 	}
 }
 
-func (l *WebsocketLogic) handleRequest(conn *websocket.Conn, msgType int, msg *message.Message) {
+func (l *WebSocketLogic) handleRequest(conn *websocket.Conn, msgType int, msg *message.Message) {
 	var resp message.Message
 	switch msg.Action {
 	case "start":
@@ -85,7 +85,7 @@ func (l *WebsocketLogic) handleRequest(conn *websocket.Conn, msgType int, msg *m
 	}
 }
 
-func (l *WebsocketLogic) handleResponse(conn *websocket.Conn, msgType int, msg *message.Message) {
+func (l *WebSocketLogic) handleResponse(conn *websocket.Conn, msgType int, msg *message.Message) {
 	l.logger.Error("unknown response action",
 		zap.String("action", msg.Action),
 	)
@@ -99,7 +99,7 @@ func (l *WebsocketLogic) handleResponse(conn *websocket.Conn, msgType int, msg *
 	}
 }
 
-func (l *WebsocketLogic) handleEvent(conn *websocket.Conn, msgType int, msg *message.Message) {
+func (l *WebSocketLogic) handleEvent(conn *websocket.Conn, msgType int, msg *message.Message) {
 	l.logger.Error("unknown event",
 		zap.String("event", msg.Event),
 	)
@@ -113,7 +113,7 @@ func (l *WebsocketLogic) handleEvent(conn *websocket.Conn, msgType int, msg *mes
 	}
 }
 
-func (l *WebsocketLogic) handleUnknowMessageType(conn *websocket.Conn, msgType int, msg *message.Message) {
+func (l *WebSocketLogic) handleUnknowMessageType(conn *websocket.Conn, msgType int, msg *message.Message) {
 	l.logger.Error("unknown message type",
 		zap.String("type", msg.Type),
 	)
@@ -140,7 +140,7 @@ type MessageStartRequestData struct {
 	TaskerID string `json:"tasker_id"`
 }
 
-func (l *WebsocketLogic) start(msg *message.Message) message.Message {
+func (l *WebSocketLogic) start(msg *message.Message) message.Message {
 	var data MessageStartRequestData
 	if err := json.Unmarshal(msg.Data, &data); err != nil {
 		return message.CreateResponse(l.logger, msg.Action, message.StatusError, "Failed to unserialize request data.", nil)
@@ -191,7 +191,7 @@ type MessageStopRequestData struct {
 	TaskerID string `json:"tasker_id"`
 }
 
-func (l *WebsocketLogic) stop(msg *message.Message) message.Message {
+func (l *WebSocketLogic) stop(msg *message.Message) message.Message {
 	l.cancel()
 
 	var data MessageStopRequestData
@@ -215,7 +215,7 @@ type EventMessageCompletedData struct {
 	TaskerID string `json:"tasker_id"`
 }
 
-func (l *WebsocketLogic) completed(taskerID string) {
+func (l *WebSocketLogic) completed(taskerID string) {
 	data := EventMessageCompletedData{
 		TaskerID: taskerID,
 	}
