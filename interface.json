@@ -1,15 +1,15 @@
 {
-    "version": "1.0",
-    "message": "Welecome to MaaFramework!",
+    "version": "dev",
+    "message": "This is intended solely for use with the MAA Support Extension.",
     "controller": [
         {
-            "name": "安卓端",
+            "name": "Android",
             "type": "Adb"
         }
     ],
     "resource": [
         {
-            "name": "Offical",
+            "name": "Base",
             "path": [
                 "{PROJECT_DIR}/assets/resource/base"
             ]
