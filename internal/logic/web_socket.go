@@ -73,6 +73,9 @@ func (l *WebSocketLogic) handleRequest(conn *websocket.Conn, msgType int, msg *m
 	case "stop":
 		resp = l.stop(msg)
 	default:
+		l.logger.Error("unknown request action",
+			zap.String("action", msg.Action),
+		)
 		resp = message.CreateResponse(l.logger, msg.Action, message.StatusError, "Unknown request action.", nil)
 	}
 
