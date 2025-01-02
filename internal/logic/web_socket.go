@@ -61,7 +61,7 @@ func (l *WebSocketLogic) ProcessMessage(conn *websocket.Conn, msgType int, msg *
 	case message.TypeEvent:
 		l.handleEvent(conn, msgType, msg)
 	default:
-		l.handleUnknowMessageType(conn, msgType, msg)
+		l.handleUnknowTypeMessage(conn, msgType, msg)
 	}
 }
 
@@ -113,11 +113,11 @@ func (l *WebSocketLogic) handleEvent(conn *websocket.Conn, msgType int, msg *mes
 	}
 }
 
-func (l *WebSocketLogic) handleUnknowMessageType(conn *websocket.Conn, msgType int, msg *message.Message) {
-	l.logger.Error("unknown message type",
+func (l *WebSocketLogic) handleUnknowTypeMessage(conn *websocket.Conn, msgType int, msg *message.Message) {
+	l.logger.Error("unknown type message",
 		zap.String("type", msg.Type),
 	)
-	event := message.CreateEvent(l.logger, "UnknownMessageType", nil)
+	event := message.CreateEvent(l.logger, "UnknownTypeMessage", nil)
 	eventBytes := serializeMessage(l.logger, event)
 	err := l.sendMessage(conn, msgType, eventBytes)
 	if err != nil {
