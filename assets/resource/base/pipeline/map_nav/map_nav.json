@@ -1,0 +1,48 @@
+{
+    "SetCurrentLocation": {
+        "recognition": "OCR",
+        "expected": [
+            "访问城市",
+            "访问地区"
+        ],
+        "roi": [
+            1018,
+            419,
+            262,
+            154
+        ],
+        "action": "Custom",
+        "custom_action": "SetCurrentLocation",
+        "next": [
+            "StartEngine"
+        ]
+    },
+    "StartEngine": {
+        "recognition": "TemplateMatch",
+        "template": "StartEngine.png",
+        "roi": [
+            1119,
+            602,
+            161,
+            118
+        ],
+        "action": "Click",
+        "next": [
+            "StartEngine",
+            "NavToDest"
+        ]
+    },
+    "NavToDest": {
+        "recognition": "OCR",
+        "expected": "图示",
+        "roi": [
+            330,
+            0,
+            138,
+            103
+        ],
+        "action": "Custom",
+        "custom_action": "MapNavigation",
+        "custom_action_param_code": "set in code."
+    }
+}
